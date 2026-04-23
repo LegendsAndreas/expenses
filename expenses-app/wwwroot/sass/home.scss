@@ -1,0 +1,26 @@
+@use 'sass:color';
+$background-color: #FFFFFF;
+
+.home {
+  padding: 10px;
+  gap: 10px;
+  display: flex;
+  flex-direction: column;
+  
+  &__new-expense {
+  }
+  
+  &__level-1 {
+    background-color: color.adjust($background-color, $lightness: -5%);
+    padding: 10px;
+    border-radius: 10px;
+    border: 1px solid #CCCCCC;
+  }
+  
+  &__level-2 {
+    background-color: color.adjust($background-color, $lightness: -10%);
+    padding: 10px;
+    border-radius: 10px;
+    border: 1px solid #CCCCCC;
+  }
+}

@@ -1,0 +1,20 @@
+.home {
+  padding: 10px;
+  gap: 10px;
+  display: flex;
+  flex-direction: column;
+}
+.home__level-1 {
+  background-color: rgb(242.25, 242.25, 242.25);
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid #CCCCCC;
+}
+.home__level-2 {
+  background-color: rgb(229.5, 229.5, 229.5);
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid #CCCCCC;
+}
+
+/*# sourceMappingURL=home.css.map */

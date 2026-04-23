@@ -1,0 +1,130 @@
+﻿@page "/"
+@using System.ComponentModel.DataAnnotations
+@using Expenses.Models
+@using Expenses.Services
+@inject ExpensesService ExpenseService
+
+<div class="home">
+    <div class="home__new-expense home__level-1">
+        <h2>New Expense</h2>
+        <EditForm Model="@_newExpense" OnValidSubmit="AddNewExpense">
+            <ValidationSummary/>
+            <DataAnnotationsValidator/>
+            <div class="form-group mb-2">
+                <label>Name</label>
+                <InputText class="form-control" @bind-Value="_newExpense.Name"/>
+            </div>
+            <div>
+                @foreach (var item in _newItems)
+                {
+                    <div class="d-flex gap-2 mb-2">
+                        <div class="d-flex gap-2">
+                            <InputText class="form-control" @bind-Value="item.Key"/>
+                            <InputNumber class="form-control" TValue="float" @bind-Value="item.Value"/>
+                        </div>
+                        <button class="btn btn-danger" type="button" @onclick="() => RemoveNewItem(item)">
+                            X
+                        </button>
+                    </div>
+                }
+            </div>
+            <div class="d-flex justify-content-between">
+                <button class="btn btn-secondary" type="button" @onclick="AddNewItem">
+                    Add Item
+                </button>
+                <button class="btn btn-primary" type="submit">
+                    Save
+                </button>
+            </div>
+        </EditForm>
+    </div>
+
+    <div class="home__level-1">
+        <h2>All Expenses</h2>
+        @foreach (var expense in _allExpenses)
+        {
+            <div class="home__level-2">
+                <div>
+                    @expense.Name
+                </div>
+                @foreach (var item in expense.Items)
+                {
+                    <div>
+                        @item.Key: @item.Value
+                    </div>
+                    <button class="btn btn-danger" type="button" @onclick="() => RemoveExpenseItem(expense, item.Key)">
+                        Remove Item
+                    </button>
+                }
+
+                <div>
+                    Total: @expense.Items.Values.Sum()
+                </div>
+
+                <button class="btn btn-danger" type="button" @onclick="() => RemoveExpense(expense)">
+                    Remove Expense
+                </button>
+            </div>
+        }
+    </div>
+
+    <button class="btn btn-primary" type="button" @onclick="UpdateAllExpenses">
+        Update All Expenses
+    </button>
+</div>
+
+@code {
+
+    private class ExpenseItem
+    {
+        [Required] public string Key { get; set; } = "";
+        public float Value { get; set; }
+    }
+
+    private List<Expenses> _allExpenses = [];
+    private Expenses _newExpense = new();
+    private List<ExpenseItem> _newItems = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        _allExpenses = await ExpenseService.GetExpenses();
+        foreach (var expense in _allExpenses)
+        {
+            expense.PrintExpenses();
+        }
+    }
+
+    private void AddNewItem()
+    {
+        _newItems.Add(new ExpenseItem { Key = "", Value = 0 });
+    }
+
+    private async Task AddNewExpense()
+    {
+        _newExpense.Items = _newItems.ToDictionary(x => x.Key, x => x.Value);
+        _allExpenses.Add(_newExpense);
+        await ExpenseService.UpdateAllExpenses(_allExpenses);
+    }
+
+    private async Task RemoveExpense(Expenses expense)
+    {
+        _allExpenses.Remove(expense);
+        await ExpenseService.UpdateAllExpenses(_allExpenses);
+    }
+
+    private void RemoveExpenseItem(Expenses expense, String item)
+    {
+        expense.Items.Remove(item);
+    }
+
+    private async Task UpdateAllExpenses()
+    {
+        await ExpenseService.UpdateAllExpenses(_allExpenses);
+    }
+
+    private void RemoveNewItem(ExpenseItem item)
+    {
+        _newItems.Remove(item);
+    }
+
+}
