@@ -6,14 +6,20 @@ public class Expenses
 {
     [Required]
     public string Name { get; set; } = "";
-    public Dictionary<string, float> Items { get; set; } = [];
+    public List<ExpensesItem> Items { get; set; } = [];
     
     public void PrintExpenses()
     {
         Console.WriteLine($"Name: {Name}");
         foreach (var item in Items)
         {
-            Console.WriteLine($"{item.Key}: {item.Value}");
+            Console.WriteLine($"{item.Name}: {item.Price}");
         }
     }
+}
+
+public class ExpensesItem
+{
+    public string Name { get; set; } = "";
+    public float Price { get; set; } = 0;
 }

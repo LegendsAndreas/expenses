@@ -4,6 +4,11 @@
   display: flex;
   flex-direction: column;
 }
+.home__action-button {
+  display: flex !important;
+  justify-content: center;
+  align-items: center;
+}
 .home__level-1 {
   background-color: rgb(242.25, 242.25, 242.25);
   padding: 10px;
@@ -15,6 +20,16 @@
   padding: 10px;
   border-radius: 10px;
   border: 1px solid #CCCCCC;
+}
+.home__expenses__expense:not(:last-child) {
+  margin-bottom: 0.5rem;
+}
+.home__expenses__expense__total {
+  font-weight: bold;
+  font-family: monospace;
+}
+.home__expenses__expense__total__price {
+  text-decoration: underline;
 }
 
 /*# sourceMappingURL=home.css.map */

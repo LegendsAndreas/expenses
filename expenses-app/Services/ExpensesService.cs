@@ -46,4 +46,14 @@ public class ExpensesService
         
         await _jsRuntime.InvokeVoidAsync("localStorage.setItem", "expenses", JsonSerializer.Serialize(expenses));
     }
+    
+    public async Task ExportExpenses()
+    {
+        await _jsRuntime.InvokeVoidAsync("exportExpenses");
+    }
+    
+    public async Task ImportExpenses()
+    {
+        await _jsRuntime.InvokeVoidAsync("importExpenses");
+    }
 }

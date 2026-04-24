@@ -1,4 +1,5 @@
 @use 'sass:color';
+
 $background-color: #FFFFFF;
 
 .home {
@@ -6,21 +7,44 @@ $background-color: #FFFFFF;
   gap: 10px;
   display: flex;
   flex-direction: column;
-  
+
   &__new-expense {
   }
   
+  &__action-button {
+    display: flex !important;
+    justify-content: center;
+    align-items: center;
+  }
+
   &__level-1 {
     background-color: color.adjust($background-color, $lightness: -5%);
     padding: 10px;
     border-radius: 10px;
     border: 1px solid #CCCCCC;
   }
-  
+
   &__level-2 {
     background-color: color.adjust($background-color, $lightness: -10%);
     padding: 10px;
     border-radius: 10px;
     border: 1px solid #CCCCCC;
+  }
+
+  &__expenses {
+    &__expense {
+      &:not(:last-child) {
+        margin-bottom: .5rem;
+      }
+      
+      &__total {
+        font-weight: bold;
+        font-family: monospace;
+        
+        &__price {
+          text-decoration: underline;
+        }
+      }
+    }
   }
 }
