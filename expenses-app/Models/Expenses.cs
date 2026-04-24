@@ -6,6 +6,7 @@ public class Expenses
 {
     [Required]
     public string Name { get; set; } = "";
+    [ValidateComplexType]
     public List<ExpensesItem> Items { get; set; } = [];
     
     public void PrintExpenses()
@@ -20,6 +21,8 @@ public class Expenses
 
 public class ExpensesItem
 {
+    [Required]
     public string Name { get; set; } = "";
-    public float Price { get; set; } = 0;
+    [Range(1, double.MaxValue, ErrorMessage = "Price must be greater than 0")]
+    public float Price { get; set; }
 }
