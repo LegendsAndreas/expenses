@@ -9,7 +9,7 @@
         <h2>New Expense</h2>
         <EditForm Model="@_newExpense" OnValidSubmit="AddNewExpense">
             <ValidationSummary/>
-            <ObjectGraphDataAnnotationsValidator />
+            <ObjectGraphDataAnnotationsValidator/>
             <div class="form-group mb-2">
                 <label>Name</label>
                 <InputText class="form-control" @bind-Value="_newExpense.Name"/>
@@ -42,9 +42,10 @@
         @foreach (var expense in _allExpenses)
         {
             <div class="home__expenses__expense home__level-2">
-                <h4>
-                    @expense.Name
-                </h4>
+                <div class="mb-2 d-flex">
+                    <InputText class="form-control home__expenses__expense__title"
+                               @bind-Value="@expense.Name"/>
+                </div>
                 @foreach (var item in expense.Items)
                 {
                     <div class="d-flex gap-2 mb-2">
@@ -53,14 +54,17 @@
                         <button class="btn btn-danger" type="button" @onclick="() => RemoveExpenseItem(expense, item)">
                             X
                         </button>
-                        <button class="btn btn-success" type="button" @onclick="() => AddExpenseItemToExisting(expense)">
+                        <button class="btn btn-success" type="button"
+                                @onclick="() => AddExpenseItemToExisting(expense)">
                             +
                         </button>
                     </div>
                 }
 
                 <div class="home__expenses__expense__total">
-                    Total: <span class="home__expenses__expense__total__price">@expense.Items.Sum(x => x.Price),-kr</span>
+                    Total:
+                    <span
+                        class="home__expenses__expense__total__price">@expense.Items.Sum(x => x.Price),-kr</span>
                 </div>
 
                 <button class="btn btn-dark" type="button" @onclick="() => RemoveExpense(expense)">
@@ -68,6 +72,10 @@
                 </button>
             </div>
         }
+        <div class="home__expenses__expense__total">
+            Total expenses: <span
+                class="home__expenses__expense__total__price">@GetTotalExpensesSum(),-kr</span>
+        </div>
     </div>
 
     <button class="btn btn-primary" type="button" @onclick="UpdateAllExpenses">
@@ -109,7 +117,7 @@
         _newExpense = new Expenses();
     }
 
-    private async Task RemoveExpense(Expenses expense)
+    private void RemoveExpense(Expenses expense)
     {
         _allExpenses.Remove(expense);
     }
@@ -117,6 +125,11 @@
     private void RemoveExpenseItem(Expenses expense, ExpensesItem item)
     {
         expense.Items.Remove(item);
+    }
+
+    private void EditExpenseName(Expenses expense, string newName)
+    {
+        expense.Name = newName;
     }
 
     private async Task UpdateAllExpenses()
@@ -133,7 +146,14 @@
     {
         expense.Items.Add(new ExpensesItem { Name = "", Price = 0 });
     }
-    
+
+    private float GetTotalExpensesSum()
+    {
+        float totalExpensesPrice = 0;
+        _allExpenses.ForEach(expenses => { totalExpensesPrice += expenses.Items.Sum(x => x.Price); });
+        return totalExpensesPrice;
+    }
+
     private async Task ExportExpenses() => await ExpenseService.ExportExpenses();
     private async Task ImportExpenses() => await ExpenseService.ImportExpenses();
 }
