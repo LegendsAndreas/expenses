@@ -37,3 +37,16 @@ window.importExpenses = () => {
 
     fileInput.click();
 };
+
+window.shakeElement = function (iconNameId) {
+    const element = document.getElementById(iconNameId);
+    if (!element) {
+        console.error(`Element with ID ${iconNameId} not found`);
+        throw new Error(`Element with ID ${iconNameId} not found`);
+    }
+
+    element.classList.remove("shake");
+    void element.offsetWidth; // force reflow to restart animation
+    element.classList.add("shake");
+    element.addEventListener("animationend", () => element.classList.remove("shake"), { once: true });
+}

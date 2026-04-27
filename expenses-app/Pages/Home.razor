@@ -1,8 +1,10 @@
 ﻿@page "/"
 @using System.ComponentModel.DataAnnotations
+@using System.Globalization
 @using Expenses.Models
 @using Expenses.Services
 @inject ExpensesService ExpenseService
+@inject IJSRuntime JsRuntime
 
 <div class="home">
     <div class="home__new-expense home__level-1">
@@ -11,8 +13,21 @@
             <ValidationSummary/>
             <ObjectGraphDataAnnotationsValidator/>
             <div class="form-group mb-2">
-                <label>Name</label>
-                <InputText class="form-control" @bind-Value="_newExpense.Name"/>
+                <div class="row">
+                    <div class="col-6">
+                        <label>Name</label>
+                        <InputText class="form-control" @bind-Value="_newExpense.Name"/>
+                    </div>
+                    <div class="col-6">
+                        <label>Currency</label>
+                        <InputSelect class="form-control"
+                                     @bind-Value="_newExpense.Currency">
+                            <option value="DKK">DKK</option>
+                            <option value="USD">USD</option>
+                            <option value="EUR">EUR</option>
+                        </InputSelect>
+                    </div>
+                </div>
             </div>
             <div>
                 @foreach (var item in _newExpense.Items)
@@ -20,6 +35,12 @@
                     <div class="d-flex gap-2 mb-2">
                         <InputText class="form-control" @bind-Value="item.Name"/>
                         <InputNumber class="form-control" TValue="float" @bind-Value="item.Price"/>
+                        <InputSelect class="form-control home__expenses__expense__title"
+                                     @bind-Value="item.Currency">
+                            <option value="DKK">DKK</option>
+                            <option value="USD">USD</option>
+                            <option value="EUR">EUR</option>
+                        </InputSelect>
                         <button class="btn btn-danger" type="button" @onclick="() => RemoveNewItem(item)">
                             X
                         </button>
@@ -43,14 +64,32 @@
         {
             <div class="home__expenses__expense home__level-2">
                 <div class="mb-2 d-flex">
-                    <InputText class="form-control home__expenses__expense__title"
-                               @bind-Value="@expense.Name"/>
+                    <InputText disabled="@(_disabledExpensesNames.Contains(expense))"
+                               class="form-control home__expenses__expense__title"
+                               @bind-Value="expense.Name"/>
+                    @{ var expenseId = $"expense-{Guid.NewGuid()}"; }
+                    <InputSelect disabled="@(_disabledExpensesNames.Contains(expense))"
+                                 class="form-control home__expenses__expense__title"
+                                 @bind-Value="expense.Currency">
+                        <option value="DKK">DKK</option>
+                        <option value="USD">USD</option>
+                        <option value="EUR">EUR</option>
+                    </InputSelect>
+                    <button class="btn btn-secondary home__expenses__expense__disable-btn" type="button"
+                            @onclick="() => ToggleExpenseTitle(expense, expenseId)">
+                        <i class="bi bi-pencil-square" id="@expenseId"></i>
+                    </button>
                 </div>
                 @foreach (var item in expense.Items)
                 {
                     <div class="d-flex gap-2 mb-2">
                         <InputText class="form-control" @bind-Value="item.Name"/>
                         <InputNumber class="form-control" TValue="float" @bind-Value="item.Price"/>
+                        <InputSelect class="form-control home__expenses__expense__title" @bind-Value="item.Currency">
+                            <option value="DKK">DKK</option>
+                            <option value="USD">USD</option>
+                            <option value="EUR">EUR</option>
+                        </InputSelect>
                         <button class="btn btn-danger" type="button" @onclick="() => RemoveExpenseItem(expense, item)">
                             X
                         </button>
@@ -64,7 +103,7 @@
                 <div class="home__expenses__expense__total">
                     Total:
                     <span
-                        class="home__expenses__expense__total__price">@expense.Items.Sum(x => x.Price),-kr</span>
+                        class="home__expenses__expense__total__price">@expense.PrintPrice()</span>
                 </div>
 
                 <button class="btn btn-dark" type="button" @onclick="() => RemoveExpense(expense)">
@@ -72,10 +111,38 @@
                 </button>
             </div>
         }
-        <div class="home__expenses__expense__total">
-            Total expenses: <span
-                class="home__expenses__expense__total__price">@GetTotalExpensesSum(),-kr</span>
+    </div>
+
+    <div class="home__level-1">
+        <div class="row justify-content-between">
+            <div class="col-12 col-xs-6 col-sm-6 col-md-6 col-lg-3">
+                <div class="home__expenses__expense__total">
+                    Month: <span class="home__expenses__expense__total__price">@_totalMonthlyMoneyStr</span>
+                </div>
+            </div>
+            <div class="col-12 col-xs-6 col-sm-6 col-md-6 col-lg-3">
+                <div class="home__expenses__expense__total">
+                    Quarter: <span
+                                 class="home__expenses__expense__total__price">@_totalQuarterlyMoneyStr</span>
+                </div>
+            </div>
+            <div class="col-12 col-xs-6 col-sm-6 col-md-6 col-lg-3">
+                <div class="home__expenses__expense__total">
+                    Semiannual: <span
+                                    class="home__expenses__expense__total__price">@_totalSemiAnnuallyMoneyStr</span>
+                </div>
+            </div>
+            <div class="col-12 col-xs-6 col-sm-6 col-md-6 col-lg-3">
+                <div class="home__expenses__expense__total">
+                    Annual: <span class="home__expenses__expense__total__price">@_totalAnnuallyMoneyStr</span>
+                </div>
+            </div>
         </div>
+        <InputSelect class="form-control" @bind-Value="_currentCurrency" @onclick="PrintTotalMoney">
+            <option value="DKK">DKK</option>
+            <option value="USD">USD</option>
+            <option value="EUR">EUR</option>
+        </InputSelect>
     </div>
 
     <button class="btn btn-primary" type="button" @onclick="UpdateAllExpenses">
@@ -95,6 +162,13 @@
 
     private List<Expenses> _allExpenses = [];
     private Expenses _newExpense = new();
+    private HashSet<Expenses> _disabledExpensesNames = [];
+    private float _totalMoney = 0;
+    private string _totalMonthlyMoneyStr = "";
+    private string _totalQuarterlyMoneyStr = "";
+    private string _totalSemiAnnuallyMoneyStr = "";
+    private string _totalAnnuallyMoneyStr = "";
+    private string _currentCurrency = "DKK";
 
     protected override async Task OnInitializedAsync()
     {
@@ -102,12 +176,50 @@
         foreach (var expense in _allExpenses)
         {
             expense.PrintExpenses();
+            _disabledExpensesNames.Add(expense);
         }
+
+        PrintTotalMoney();
     }
 
-    private void AddNewItem()
+    private void PrintTotalMoney()
     {
-        _newExpense.Items.Add(new ExpensesItem { Name = "", Price = 0 });
+        float multiplier = 1;
+        string symbol = "";
+        _totalMoney = 0;
+        if (_currentCurrency == "DKK")
+        {
+            multiplier = 1;
+            symbol = ",-kr";
+        }
+        else if (_currentCurrency == "EUR")
+        {
+            multiplier = 7.45f;
+            symbol = ",-€";
+        }
+        else if (_currentCurrency == "USD")
+        {
+            multiplier = 6.5f;
+            symbol = ",-$";
+        }
+
+        foreach (var expense in _allExpenses)
+        {
+            _totalMoney += expense.SumPrice(multiplier);
+        }
+
+        _totalMonthlyMoneyStr = _totalMoney.ToString(".00") + symbol;
+        _totalQuarterlyMoneyStr = (_totalMoney * 3).ToString(".00") + symbol;
+        _totalSemiAnnuallyMoneyStr = (_totalMoney * 6).ToString(".00") + symbol;
+        _totalAnnuallyMoneyStr = (_totalMoney * 12).ToString(".00") + symbol;
+        StateHasChanged();
+    }
+
+    private async Task ToggleExpenseTitle(Expenses expense, string expenseName)
+    {
+        if (!_disabledExpensesNames.Add(expense))
+            _disabledExpensesNames.Remove(expense);
+        await JsRuntime.InvokeVoidAsync("window.shakeElement", expenseName);
     }
 
     private async Task AddNewExpense()
@@ -117,43 +229,13 @@
         _newExpense = new Expenses();
     }
 
-    private void RemoveExpense(Expenses expense)
-    {
-        _allExpenses.Remove(expense);
-    }
-
-    private void RemoveExpenseItem(Expenses expense, ExpensesItem item)
-    {
-        expense.Items.Remove(item);
-    }
-
-    private void EditExpenseName(Expenses expense, string newName)
-    {
-        expense.Name = newName;
-    }
-
-    private async Task UpdateAllExpenses()
-    {
-        await ExpenseService.UpdateAllExpenses(_allExpenses);
-    }
-
-    private void RemoveNewItem(ExpensesItem item)
-    {
-        _newExpense.Items.Remove(item);
-    }
-
-    private void AddExpenseItemToExisting(Expenses expense)
-    {
-        expense.Items.Add(new ExpensesItem { Name = "", Price = 0 });
-    }
-
-    private float GetTotalExpensesSum()
-    {
-        float totalExpensesPrice = 0;
-        _allExpenses.ForEach(expenses => { totalExpensesPrice += expenses.Items.Sum(x => x.Price); });
-        return totalExpensesPrice;
-    }
-
+    private void AddNewItem() => _newExpense.Items.Add(new ExpensesItem { Name = "", Price = 0 });
+    private void RemoveExpense(Expenses expense) => _allExpenses.Remove(expense);
+    private void RemoveExpenseItem(Expenses expense, ExpensesItem item) => expense.Items.Remove(item);
+    private async Task UpdateAllExpenses() => await ExpenseService.UpdateAllExpenses(_allExpenses);
+    private void RemoveNewItem(ExpensesItem item) => _newExpense.Items.Remove(item);
+    private void AddExpenseItemToExisting(Expenses expense) => expense.Items.Add(new ExpensesItem { Name = "", Price = 0 });
+    private float GetAllExpensesSum() => _allExpenses.Sum(expenses => expenses.Items.Sum(item => item.Price));
     private async Task ExportExpenses() => await ExpenseService.ExportExpenses();
     private async Task ImportExpenses() => await ExpenseService.ImportExpenses();
 }
