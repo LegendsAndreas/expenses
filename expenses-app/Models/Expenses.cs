@@ -59,15 +59,15 @@ public class Expenses
         {
             if (item.Currency == "DKK")
             {
-                sum += item.Price * 1;
+                sum += item.Price * 1 * item.CountedDaysInAMonth;
             }
             else if (item.Currency == "USD")
             {
-                sum += item.Price * 6.4f;
+                sum += item.Price * 6.4f * item.CountedDaysInAMonth;
             }
             else if (item.Currency == "EUR")
             {
-                sum += item.Price * 7.5f;
+                sum += item.Price * 7.5f * item.CountedDaysInAMonth;
             }
         }
 
@@ -94,6 +94,9 @@ public class ExpensesItem
 {
     [Required] public string Name { get; set; } = "";
     [Required] public string Currency { get; set; } = "";
+    [Required] 
+    [Range(1, 31)]
+    public int CountedDaysInAMonth { get; set; } = 1;
 
     [Range(1, double.MaxValue, ErrorMessage = "Price must be greater than 0")]
     public float Price { get; set; }

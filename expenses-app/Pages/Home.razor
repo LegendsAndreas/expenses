@@ -1,8 +1,4 @@
 ﻿@page "/"
-@using System.ComponentModel.DataAnnotations
-@using System.Globalization
-@using Expenses.Models
-@using Expenses.Services
 @inject ExpensesService ExpenseService
 @inject IJSRuntime JsRuntime
 
@@ -40,12 +36,7 @@
                             </button>
                         </div>
                         <div class="d-flex gap-2">
-                            <InputSelect class="form-control home__expenses__expense__title"
-                                         @bind-Value="item.Currency">
-                                <option value="DKK">DKK</option>
-                                <option value="USD">USD</option>
-                                <option value="EUR">EUR</option>
-                            </InputSelect>
+                            <SelectCountedDaysInAMonth Item="@item" OnChanged="ChangeState"/>
                             <InputSelect class="form-control home__expenses__expense__title"
                                          @bind-Value="item.Currency">
                                 <option value="DKK">DKK</option>
@@ -97,6 +88,7 @@
                             <InputNumber class="form-control" TValue="float" @bind-Value="item.Price"/>
                         </div>
                         <div class="d-flex gap-2">
+                            <SelectCountedDaysInAMonth Item="@item" OnChanged="ChangeState"/>
                             <InputSelect class="form-control home__expenses__expense__title"
                                          @bind-Value="item.Currency">
                                 <option value="DKK">DKK</option>
@@ -231,6 +223,8 @@
 
         PrintTotalMoney();
     }
+    
+    public void ChangeState() => StateHasChanged();
 
     private void PrintTotalMoney()
     {
