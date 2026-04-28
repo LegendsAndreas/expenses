@@ -11,7 +11,7 @@ public class ExpensesService
         _jsRuntime = jsRuntime;
     }
     
-    public async Task<List<Models.Expenses>> GetExpenses()
+    public async Task<List<Models.Expenses>?> GetExpenses()
     {
         string localStorageExpenses = await _jsRuntime.InvokeAsync<string>("localStorage.getItem", "expenses");
         

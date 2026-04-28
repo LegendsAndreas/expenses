@@ -49,6 +49,13 @@ $background-color: #FFFFFF;
     border: 1px solid #CCCCCC;
   }
 
+  &__level-3 {
+    background-color: color.adjust($background-color, $lightness: -15%);
+    padding: 10px;
+    border-radius: 10px;
+    border: 1px solid #CCCCCC;
+  }
+
   &__expenses {
     &__expense {
       &__title {
@@ -90,6 +97,11 @@ $background-color: #FFFFFF;
       &__total {
         font-weight: bold;
         font-family: monospace;
+
+        @media screen and (max-width: 576px) {
+          display: flex;
+          justify-content: space-between;
+        }
 
         &__price {
           text-decoration: underline;

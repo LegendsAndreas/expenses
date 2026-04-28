@@ -20,8 +20,7 @@
                     </div>
                     <div class="col-6">
                         <label>Currency</label>
-                        <InputSelect class="form-control"
-                                     @bind-Value="_newExpense.Currency">
+                        <InputSelect class="form-control" @bind-Value="_newExpense.Currency">
                             <option value="DKK">DKK</option>
                             <option value="USD">USD</option>
                             <option value="EUR">EUR</option>
@@ -32,18 +31,28 @@
             <div>
                 @foreach (var item in _newExpense.Items)
                 {
-                    <div class="d-flex gap-2 mb-2">
-                        <InputText class="form-control" @bind-Value="item.Name"/>
-                        <InputNumber class="form-control" TValue="float" @bind-Value="item.Price"/>
-                        <InputSelect class="form-control home__expenses__expense__title"
-                                     @bind-Value="item.Currency">
-                            <option value="DKK">DKK</option>
-                            <option value="USD">USD</option>
-                            <option value="EUR">EUR</option>
-                        </InputSelect>
-                        <button class="btn btn-danger" type="button" @onclick="() => RemoveNewItem(item)">
-                            X
-                        </button>
+                    <div class="home__level-2 mb-2">
+                        <div class="d-flex gap-2 mb-2">
+                            <InputText class="form-control" @bind-Value="item.Name"/>
+                            <InputNumber class="form-control" TValue="float" @bind-Value="item.Price"/>
+                            <button class="btn btn-danger" type="button" @onclick="() => RemoveNewItem(item)">
+                                X
+                            </button>
+                        </div>
+                        <div class="d-flex gap-2">
+                            <InputSelect class="form-control home__expenses__expense__title"
+                                         @bind-Value="item.Currency">
+                                <option value="DKK">DKK</option>
+                                <option value="USD">USD</option>
+                                <option value="EUR">EUR</option>
+                            </InputSelect>
+                            <InputSelect class="form-control home__expenses__expense__title"
+                                         @bind-Value="item.Currency">
+                                <option value="DKK">DKK</option>
+                                <option value="USD">USD</option>
+                                <option value="EUR">EUR</option>
+                            </InputSelect>
+                        </div>
                     </div>
                 }
             </div>
@@ -82,28 +91,61 @@
                 </div>
                 @foreach (var item in expense.Items)
                 {
-                    <div class="d-flex gap-2 mb-2">
-                        <InputText class="form-control" @bind-Value="item.Name"/>
-                        <InputNumber class="form-control" TValue="float" @bind-Value="item.Price"/>
-                        <InputSelect class="form-control home__expenses__expense__title" @bind-Value="item.Currency">
-                            <option value="DKK">DKK</option>
-                            <option value="USD">USD</option>
-                            <option value="EUR">EUR</option>
-                        </InputSelect>
-                        <button class="btn btn-danger" type="button" @onclick="() => RemoveExpenseItem(expense, item)">
-                            X
-                        </button>
-                        <button class="btn btn-success" type="button"
-                                @onclick="() => AddExpenseItemToExisting(expense)">
-                            +
-                        </button>
+                    <div class="home__level-3 mb-2">
+                        <div class="d-flex gap-2 mb-2">
+                            <InputText class="form-control" @bind-Value="item.Name"/>
+                            <InputNumber class="form-control" TValue="float" @bind-Value="item.Price"/>
+                        </div>
+                        <div class="d-flex gap-2">
+                            <InputSelect class="form-control home__expenses__expense__title"
+                                         @bind-Value="item.Currency">
+                                <option value="DKK">DKK</option>
+                                <option value="USD">USD</option>
+                                <option value="EUR">EUR</option>
+                            </InputSelect>
+                            <button class="btn btn-danger" type="button"
+                                    @onclick="() => RemoveExpenseItem(expense, item)">
+                                X
+                            </button>
+                            <button class="btn btn-success" type="button"
+                                    @onclick="() => AddExpenseItemToExisting(expense)">
+                                +
+                            </button>
+                        </div>
                     </div>
                 }
 
                 <div class="home__expenses__expense__total">
-                    Total:
-                    <span
-                        class="home__expenses__expense__total__price">@expense.PrintPrice()</span>
+                    <div class="row">
+                        <div class="col-12 col-sm-6 col-md-6 col-lg-3 home__expenses__expense__total__mobile">
+                            <div class="home__expenses__expense__total">
+                                Month:
+                                <span
+                                    class="home__expenses__expense__total__price">@expense.GetMonthlyPrice().ToString(".00")@expense.GetCurrencySymbol()</span>
+                            </div>
+                        </div>
+                        <div class="col-12 col-sm-6 col-md-6 col-lg-3 home__expenses__expense__total__mobile">
+                            <div class="home__expenses__expense__total">
+                                Quarter:
+                                <span
+                                    class="home__expenses__expense__total__price">@((expense.GetMonthlyPrice() * 3).ToString(".00"))@expense.GetCurrencySymbol()</span>
+                            </div>
+                        </div>
+                        <div class="col-12 col-sm-6 col-md-6 col-lg-3 home__expenses__expense__total__mobile">
+                            <div class="home__expenses__expense__total">
+                                Semiannual:
+                                <span
+                                    class="home__expenses__expense__total__price">@((expense.GetMonthlyPrice() * 6).ToString(".00"))@expense.GetCurrencySymbol()</span>
+                            </div>
+                        </div>
+                        <div class="col-12 col-sm-6 col-md-6 col-lg-3 home__expenses__expense__total__mobile">
+                            <div class="home__expenses__expense__total">
+                                Annual:
+                                <span
+                                    class="home__expenses__expense__total__price">@((expense.GetMonthlyPrice() * 12).ToString(".00"))@expense.GetCurrencySymbol()</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <button class="btn btn-dark" type="button" @onclick="() => RemoveExpense(expense)">
@@ -114,25 +156,25 @@
     </div>
 
     <div class="home__level-1">
-        <div class="row justify-content-between">
-            <div class="col-12 col-xs-6 col-sm-6 col-md-6 col-lg-3">
+        <div class="row">
+            <div class="col-12 col-xs-6 col-sm-6 col-md-6 col-lg-3 home__expenses__expense__total__mobile">
                 <div class="home__expenses__expense__total">
                     Month: <span class="home__expenses__expense__total__price">@_totalMonthlyMoneyStr</span>
                 </div>
             </div>
-            <div class="col-12 col-xs-6 col-sm-6 col-md-6 col-lg-3">
+            <div class="col-12 col-xs-6 col-sm-6 col-md-6 col-lg-3 home__expenses__expense__total__mobile">
                 <div class="home__expenses__expense__total">
                     Quarter: <span
-                                 class="home__expenses__expense__total__price">@_totalQuarterlyMoneyStr</span>
+                        class="home__expenses__expense__total__price">@_totalQuarterlyMoneyStr</span>
                 </div>
             </div>
-            <div class="col-12 col-xs-6 col-sm-6 col-md-6 col-lg-3">
+            <div class="col-12 col-xs-6 col-sm-6 col-md-6 col-lg-3 home__expenses__expense__total__mobile">
                 <div class="home__expenses__expense__total">
                     Semiannual: <span
-                                    class="home__expenses__expense__total__price">@_totalSemiAnnuallyMoneyStr</span>
+                        class="home__expenses__expense__total__price">@_totalSemiAnnuallyMoneyStr</span>
                 </div>
             </div>
-            <div class="col-12 col-xs-6 col-sm-6 col-md-6 col-lg-3">
+            <div class="col-12 col-xs-6 col-sm-6 col-md-6 col-lg-3 home__expenses__expense__total__mobile">
                 <div class="home__expenses__expense__total">
                     Annual: <span class="home__expenses__expense__total__price">@_totalAnnuallyMoneyStr</span>
                 </div>
@@ -172,7 +214,15 @@
 
     protected override async Task OnInitializedAsync()
     {
-        _allExpenses = await ExpenseService.GetExpenses();
+        var expenses = await ExpenseService.GetExpenses();
+        if (expenses == null)
+        {
+            await JsRuntime.InvokeVoidAsync("alert", "No expenses found");
+            return;
+        }
+
+        _allExpenses = expenses;
+
         foreach (var expense in _allExpenses)
         {
             expense.PrintExpenses();
@@ -227,15 +277,35 @@
         _allExpenses.Add(_newExpense);
         await ExpenseService.UpdateAllExpenses(_allExpenses);
         _newExpense = new Expenses();
+        PrintTotalMoney();
     }
 
     private void AddNewItem() => _newExpense.Items.Add(new ExpensesItem { Name = "", Price = 0 });
-    private void RemoveExpense(Expenses expense) => _allExpenses.Remove(expense);
-    private void RemoveExpenseItem(Expenses expense, ExpensesItem item) => expense.Items.Remove(item);
-    private async Task UpdateAllExpenses() => await ExpenseService.UpdateAllExpenses(_allExpenses);
-    private void RemoveNewItem(ExpensesItem item) => _newExpense.Items.Remove(item);
+
+    private void RemoveExpense(Expenses expense)
+    {
+        _allExpenses.Remove(expense);
+        PrintTotalMoney();
+    }
+
+    private void RemoveExpenseItem(Expenses expense, ExpensesItem item)
+    {
+        expense.Items.Remove(item);
+        PrintTotalMoney();
+    }
+
+    private async Task UpdateAllExpenses()
+    {
+        await ExpenseService.UpdateAllExpenses(_allExpenses);
+        PrintTotalMoney();
+    }
+
+    private void RemoveNewItem(ExpensesItem item)
+    {
+        _newExpense.Items.Remove(item);
+    }
+
     private void AddExpenseItemToExisting(Expenses expense) => expense.Items.Add(new ExpensesItem { Name = "", Price = 0 });
-    private float GetAllExpensesSum() => _allExpenses.Sum(expenses => expenses.Items.Sum(item => item.Price));
     private async Task ExportExpenses() => await ExpenseService.ExportExpenses();
     private async Task ImportExpenses() => await ExpenseService.ImportExpenses();
 }

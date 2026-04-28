@@ -33,6 +33,25 @@ public class Expenses
         }
     }
 
+    public float GetMonthlyPrice()
+    {
+        switch (Currency)
+        {
+            case "DKK":
+                return SumPrice(1);
+            case "USD":
+                return SumPrice(6.4f);
+            case "EUR":
+                return SumPrice(7.5f);
+            default:
+                throw new ArgumentException("Unsupported currency");
+        }
+    }
+
+    /**
+     * Note that if currency string is not set for an item, nothing happens for that item, which is actually fine
+     * for when adding a new item in the frontend.
+     */
     public float SumPrice(float multiplier)
     {
         float sum = 0;
@@ -53,6 +72,21 @@ public class Expenses
         }
 
         return sum / multiplier;
+    }
+
+    public string GetCurrencySymbol()
+    {
+        switch (Currency)
+        {
+            case "DKK":
+                return ",-kr";
+            case "USD":
+                return ",-$";
+            case "EUR":
+                return ",-€";
+            default:
+                throw new ArgumentException("Unsupported currency");
+        }
     }
 }
 

@@ -38,6 +38,12 @@
   border-radius: 10px;
   border: 1px solid #CCCCCC;
 }
+.home__level-3 {
+  background-color: rgb(216.75, 216.75, 216.75);
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid #CCCCCC;
+}
 .home__expenses__expense__title {
   width: fit-content !important;
   font-size: 22px !important;
@@ -68,6 +74,12 @@
 .home__expenses__expense__total {
   font-weight: bold;
   font-family: monospace;
+}
+@media screen and (max-width: 576px) {
+  .home__expenses__expense__total {
+    display: flex;
+    justify-content: space-between;
+  }
 }
 .home__expenses__expense__total__price {
   text-decoration: underline;
