@@ -52,13 +52,15 @@ window.shakeElement = function (iconNameId) {
 }
 
 window.setHeight = function () {
-    const setHeight = document.querySelector(".js-set-height");
-    console.log(`[${new Date().toISOString()}] Height: ` + setHeight.style.height);
-    console.log(`[${new Date().toISOString()}] Scroll Height: ` + setHeight.scrollHeight);
-    setHeight.style.height = `${setHeight.scrollHeight}px`;
+    const setHeight = document.querySelectorAll(".js-set-height");
+    setHeight.forEach(element => {
+        console.log(`[${new Date().toISOString()}] Height: ` + element.style.height);
+        console.log(`[${new Date().toISOString()}] Scroll Height: ` + element.scrollHeight);
+        element.style.height = `${element.scrollHeight}px`;
+    });
 };
 
-window.removeExpenseButton = function (itemId) {
+window.removeExpenseButton = function (itemId, containerId) {
     const expense = document.querySelector("#" + itemId);
     if (!expense) {
         console.error(`[${new Date().toISOString()}] Expense with ID ${itemId} not found`);
@@ -70,7 +72,7 @@ window.removeExpenseButton = function (itemId) {
         const marginTop = parseFloat(style.marginTop);
         const marginBottom = parseFloat(style.marginBottom);
         const expenseTotalHeight = expense.offsetHeight + marginTop + marginBottom;
-        const setHeight = document.querySelector(".js-set-height");
+        const setHeight = document.querySelector("#" + containerId);
         const setHeightHeight = setHeight.offsetHeight;
         setHeight.style.height = `${setHeightHeight - expenseTotalHeight}px`;
     }

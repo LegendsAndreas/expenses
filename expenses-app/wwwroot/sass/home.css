@@ -49,6 +49,11 @@
   border-radius: 10px;
   border: 1px solid #CCCCCC;
 }
+.home__expenses__expense__item {
+  transition: height 0.3s ease;
+  overflow: hidden;
+  height: 0;
+}
 .home__expenses__expense__title {
   width: fit-content !important;
   font-size: 22px !important;

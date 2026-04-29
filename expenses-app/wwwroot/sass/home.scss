@@ -63,6 +63,11 @@ $background-color: #FFFFFF;
 
   &__expenses {
     &__expense {
+      &__item {
+        transition: height 0.3s ease;
+        overflow: hidden;
+        height: 0;
+      }
       &__title {
         width: fit-content !important;
         font-size: 22px !important;

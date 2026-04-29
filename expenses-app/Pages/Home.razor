@@ -24,7 +24,8 @@
                     </div>
                 </div>
             </div>
-            <div class="js-set-height home__new-expense__form-group">
+            @{ string containerId = $"expense-container-{Guid.NewGuid()}";}
+            <div class="js-set-height home__new-expense__form-group" id="@containerId">
                 @foreach (var item in _newExpense.Items)
                 {
                     var itemId = $"new-expense-item-{Guid.NewGuid()}";
@@ -32,7 +33,8 @@
                         <div class="d-flex gap-2 mb-2">
                             <InputText class="form-control" @bind-Value="item.Name"/>
                             <InputNumber class="form-control" TValue="float" @bind-Value="item.Price"/>
-                            <button class="btn btn-danger" type="button" @onclick="() => RemoveNewExpense(item, itemId)">
+                            <button class="btn btn-danger" type="button"
+                                    @onclick="() => RemoveNewExpense(item, itemId, containerId)">
                                 X
                             </button>
                         </div>
@@ -63,12 +65,13 @@
         <h2>All Expenses</h2>
         @foreach (var expense in _allExpenses)
         {
+            string containerId = $"expense-container-{Guid.NewGuid()}";
             <div class="home__expenses__expense home__level-2">
                 <div class="mb-2 d-flex">
                     <InputText disabled="@(_disabledExpensesNames.Contains(expense))"
                                class="form-control home__expenses__expense__title"
                                @bind-Value="expense.Name"/>
-                    @{ var expenseId = $"expense-{Guid.NewGuid()}"; }
+                    @{ string expenseId = $"expense-{Guid.NewGuid()}"; }
                     <InputSelect disabled="@(_disabledExpensesNames.Contains(expense))"
                                  class="form-control home__expenses__expense__title"
                                  @bind-Value="expense.Currency">
@@ -81,32 +84,35 @@
                         <i class="bi bi-pencil-square" id="@expenseId"></i>
                     </button>
                 </div>
-                @foreach (var item in expense.Items)
-                {
-                    <div class="home__level-3 mb-2">
-                        <div class="d-flex gap-2 mb-2">
-                            <InputText class="form-control" @bind-Value="item.Name"/>
-                            <InputNumber class="form-control" TValue="float" @bind-Value="item.Price"/>
+                <div class="home__expenses__expense__item js-set-height" id="@containerId">
+                    @foreach (var item in expense.Items)
+                    {
+                        var itemId = $"new-expense-item-{Guid.NewGuid()}";
+                        <div class="home__level-3 mb-2" id="@itemId">
+                            <div class="d-flex gap-2 mb-2">
+                                <InputText class="form-control" @bind-Value="item.Name"/>
+                                <InputNumber class="form-control" TValue="float" @bind-Value="item.Price"/>
+                            </div>
+                            <div class="d-flex gap-2">
+                                <SelectCountedDaysInAMonth Item="@item" OnChanged="ChangeState"/>
+                                <InputSelect class="form-control home__expenses__expense__select"
+                                             @bind-Value="item.Currency">
+                                    <option value="DKK">DKK</option>
+                                    <option value="USD">USD</option>
+                                    <option value="EUR">EUR</option>
+                                </InputSelect>
+                                <button class="btn btn-danger" type="button"
+                                        @onclick="() => RemoveExpenseItemFromExpenseList(expense, item, itemId, containerId)">
+                                    X
+                                </button>
+                                <button class="btn btn-success" type="button"
+                                        @onclick="() => AddExpenseItemToExisting(expense)">
+                                    +
+                                </button>
+                            </div>
                         </div>
-                        <div class="d-flex gap-2">
-                            <SelectCountedDaysInAMonth Item="@item" OnChanged="ChangeState"/>
-                            <InputSelect class="form-control home__expenses__expense__select"
-                                         @bind-Value="item.Currency">
-                                <option value="DKK">DKK</option>
-                                <option value="USD">USD</option>
-                                <option value="EUR">EUR</option>
-                            </InputSelect>
-                            <button class="btn btn-danger" type="button"
-                                    @onclick="() => RemoveExpenseItemFromExpenseList(expense, item)">
-                                X
-                            </button>
-                            <button class="btn btn-success" type="button"
-                                    @onclick="() => AddExpenseItemToExisting(expense)">
-                                +
-                            </button>
-                        </div>
-                    </div>
-                }
+                    }
+                </div>
 
                 <div class="home__expenses__expense__total">
                     <div class="row">
@@ -224,6 +230,7 @@
         }
 
         PrintTotalMoney();
+        await JsRuntime.InvokeVoidAsync("setHeight");
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -297,10 +304,10 @@
         PrintTotalMoney();
     }
 
-    private async Task RemoveExpenseItemFromExpenseList(Expenses expense, ExpensesItem item)
+    private async Task RemoveExpenseItemFromExpenseList(Expenses expense, ExpensesItem item, string itemId, string containerId)
     {
         expense.Items.Remove(item);
-        await JsRuntime.InvokeVoidAsync("setHeight");
+        await JsRuntime.InvokeVoidAsync("removeExpenseButton", itemId, containerId);
         PrintTotalMoney();
     }
 
@@ -310,13 +317,18 @@
         PrintTotalMoney();
     }
 
-    private async Task RemoveNewExpense(ExpensesItem item, string itemId)
+    private async Task RemoveNewExpense(ExpensesItem item, string itemId, string containerId)
     {
         _newExpense.Items.Remove(item);
-        await JsRuntime.InvokeVoidAsync("removeExpenseButton", itemId);
+        await JsRuntime.InvokeVoidAsync("removeExpenseButton", itemId, containerId);
     }
 
-    private void AddExpenseItemToExisting(Expenses expense) => expense.Items.Add(new ExpensesItem { Name = "", Price = 0 });
+    private void AddExpenseItemToExisting(Expenses expense)
+    {
+        expense.Items.Add(new ExpensesItem { Name = "", Price = 0 });
+        _setHeight = true;
+    }
+
     private async Task ExportExpenses() => await ExpenseService.ExportExpenses();
     private async Task ImportExpenses() => await ExpenseService.ImportExpenses();
 }
