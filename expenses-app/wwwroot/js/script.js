@@ -5,7 +5,7 @@
         return;
     }
 
-    const blob = new Blob([expenses], { type: "application/json" });
+    const blob = new Blob([expenses], {type: "application/json"});
     const url = URL.createObjectURL(blob);
 
     const a = document.createElement("a");
@@ -48,5 +48,30 @@ window.shakeElement = function (iconNameId) {
     element.classList.remove("shake");
     void element.offsetWidth; // force reflow to restart animation
     element.classList.add("shake");
-    element.addEventListener("animationend", () => element.classList.remove("shake"), { once: true });
+    element.addEventListener("animationend", () => element.classList.remove("shake"), {once: true});
 }
+
+window.setHeight = function () {
+    const setHeight = document.querySelector(".js-set-height");
+    console.log(`[${new Date().toISOString()}] Height: ` + setHeight.style.height);
+    console.log(`[${new Date().toISOString()}] Scroll Height: ` + setHeight.scrollHeight);
+    setHeight.style.height = `${setHeight.scrollHeight}px`;
+};
+
+window.removeExpenseButton = function (itemId) {
+    const expense = document.querySelector("#" + itemId);
+    if (!expense) {
+        console.error(`[${new Date().toISOString()}] Expense with ID ${itemId} not found`);
+        return;
+    }
+    
+    if (expense) {
+        const style = getComputedStyle(expense);
+        const marginTop = parseFloat(style.marginTop);
+        const marginBottom = parseFloat(style.marginBottom);
+        const expenseTotalHeight = expense.offsetHeight + marginTop + marginBottom;
+        const setHeight = document.querySelector(".js-set-height");
+        const setHeightHeight = setHeight.offsetHeight;
+        setHeight.style.height = `${setHeightHeight - expenseTotalHeight}px`;
+    }
+};

@@ -21,6 +21,11 @@
   display: flex;
   flex-direction: column;
 }
+.home__new-expense__form-group {
+  transition: height 0.3s ease;
+  overflow: hidden;
+  height: 0;
+}
 .home__action-button {
   display: flex !important;
   justify-content: center;
@@ -55,6 +60,18 @@
   margin-right: 0.5rem;
 }
 .home__expenses__expense__title:disabled {
+  background-color: transparent !important;
+  border-color: transparent !important;
+}
+.home__expenses__expense__select {
+  width: fit-content !important;
+  max-width: 180px !important;
+  background-color: var(--bs-body-bg);
+  border-color: initial !important;
+  transition: border-color 0.2s ease;
+  margin-right: 0.5rem;
+}
+.home__expenses__expense__select:disabled {
   background-color: transparent !important;
   border-color: transparent !important;
 }
