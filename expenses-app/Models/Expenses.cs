@@ -18,21 +18,6 @@ public class Expenses
         }
     }
 
-    public string PrintPrice()
-    {
-        switch (Currency)
-        {
-            case "DKK":
-                return SumPrice(1).ToString(CultureInfo.CurrentCulture) + ",-kr";
-            case "USD":
-                return SumPrice(6.4f).ToString(CultureInfo.CurrentCulture) + ",-$";
-            case "EUR":
-                return SumPrice(7.5f).ToString(CultureInfo.CurrentCulture) + ",-€";
-            default:
-                throw new ArgumentException("Unsupported currency");
-        }
-    }
-
     public float GetMonthlyPrice()
     {
         switch (Currency)
