@@ -1,0 +1,7 @@
+services:
+  expenses-app:
+    ports:
+      - "8090:8090"
+    build:
+      dockerfile: expenses-app/Dockerfile
+      context: .
