@@ -5,3 +5,4 @@ services:
     build:
       dockerfile: expenses-app/Dockerfile
       context: .
+  
