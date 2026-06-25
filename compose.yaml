@@ -1,15 +1,11 @@
 x-common-security: &common-security
-  user: "1001:1001"
-  read_only: true
   tmpfs:
     - /tmp:rw,noexec,nosuid
-  cap_drop:
-    - ALL
   security_opt:
-    - no-new-privileges:true
+    - no-new-privileges:true # A user cannot give itself new privileges
   mem_limit: 256m
   cpus: 0.5
-  pids_limit: 100
+  pids_limit: 100 # Processes limits
 
 services:
   expenses-app:
