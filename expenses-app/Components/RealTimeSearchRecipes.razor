@@ -1,0 +1,109 @@
+@inject ApiService ApiService;
+
+<div>
+    <div class="col">
+        <input type="text" class="form-control" placeholder="Search recipes..." @bind="_searchBarInput"
+               @oninput="OnInputChange"
+               @onfocus="OnSearchBarFocus" @onblur="OnSearchBarBlur">
+    </div>
+    @if (_isSearchBarActive && _searchBarInput != string.Empty)
+    {
+        @* To avoid the dropdown menu being hidden behind the parent element, we give it the position absolute to put it
+        on a "higher" level. *@
+        <div class="dropdown position-absolute">
+            <ul class="dropdown-menu show"> @* "show" is vital, since it automatically shows the items. *@
+                @if (_isLoading)
+                {
+                    <li>
+                        <button class="dropdown-item" type="button">Loading...</button>
+                    </li>
+                }
+                else
+                {
+                    @if (_recipes.Count != 0)
+                    {
+                        @foreach (var recipe in _recipes)
+                        {
+                            <li>
+                                <a class="dropdown-item"
+                                   onclick="@(() => HandleRecipe(recipe.Id))">@recipe.Name</a>
+                            </li>
+                        }
+                    }
+                    else
+                    {
+                        <li>
+                            <button class="dropdown-item" type="button">No results found</button>
+                        </li>
+                    }
+                }
+            </ul>
+        </div>
+    }
+</div>
+
+@code{
+    private string _searchBarInput = string.Empty;
+    private bool _isSearchBarActive = false;
+    private bool _isLoading;
+    private List<RecipeSearchItemDto> _recipes { get; set; } = [];
+    [Parameter] public required Recipe CurrentRecipeData { get; set; }
+    [Parameter] public EventCallback<Recipe> CurrentRecipeDataHasChanged { get; set; }
+
+    private async Task HandleRecipe(int id)
+    {
+        var result = await ApiService.GetRecipe(id);
+        if (!string.IsNullOrEmpty(result.msg))
+        {
+            Console.WriteLine(result.msg);
+        }
+        else
+        {
+            CurrentRecipeData = result.recipe;
+            await CurrentRecipeDataHasChanged.InvokeAsync(CurrentRecipeData);
+            StateHasChanged();
+        }
+    }
+
+    private async Task OnInputChange(ChangeEventArgs e)
+    {
+        // Console.WriteLine("Input has changed...");
+        _searchBarInput = e.Value?.ToString() ?? string.Empty; // "??" checks what value is not null and chooses the non-null value.
+        if (_searchBarInput != "")
+        {
+            _isLoading = true;
+            StateHasChanged();
+            var result = await ApiService.GetRecipeSearchResults(_searchBarInput);
+            if (string.IsNullOrEmpty(result.msg))
+            {
+                _recipes = result.recipes;
+            }
+            else
+            {
+                Console.WriteLine(result.msg);
+            }
+        }
+
+        _isLoading = false;
+        // Console.WriteLine($"Input changed: {_searchBarInput}");
+    }
+
+
+    private void OnSearchBarFocus()
+    {
+        // Console.WriteLine("Search bar is active...");
+        _isSearchBarActive = true;
+        StateHasChanged();
+    }
+
+    private async Task OnSearchBarBlur()
+    {
+        // To make sure that we can click the elements in our dropdown items, we have to use this scuffed delay to make
+        // sure the item does not disappear, before we can actually click it.
+        await Task.Delay(200);
+        // Console.WriteLine("Search bar is no longer active...");
+        _isSearchBarActive = false;
+        StateHasChanged();
+    }
+
+}
