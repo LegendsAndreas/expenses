@@ -14,7 +14,7 @@ COPY expenses-app/. ./expenses-app/
 RUN cd expenses-app && dotnet publish -c Release -o /app/publish
 
 # Stage 2: Serve with nginx
-FROM nginx:alpine
+FROM nginx:1.31.2-alpine
 
 # Remove default nginx website
 RUN rm -rf /usr/share/nginx/html/*

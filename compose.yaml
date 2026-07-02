@@ -1,5 +1,15 @@
+x-common-security: &common-security
+  tmpfs:
+    - /tmp:rw,noexec,nosuid
+  security_opt:
+    - no-new-privileges:true # A user cannot give itself new privileges
+  mem_limit: 256m
+  cpus: 0.5
+  pids_limit: 100 # Processes limits
+
 services:
   expenses-app:
+    <<: *common-security
     ports:
       - "8090:8090"
     build:
