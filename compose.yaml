@@ -16,4 +16,5 @@ services:
       dockerfile: expenses-app/Dockerfile
       context: .
     restart: unless-stopped
-  
+    environment:
+      - RECIPES_API=${RECIPES_API}

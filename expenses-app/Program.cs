@@ -14,17 +14,8 @@ public class Program
         builder.RootComponents.Add<HeadOutlet>("head::after");
 
         builder.Services.AddScoped<ExpensesService>(sp => new ExpensesService(sp.GetRequiredService<IJSRuntime>()));
-        
-        string apiEndpoint;
-        if (builder.HostEnvironment.Environment == "Development")
-        {
-            apiEndpoint = "http://localhost:5058/api/";
-        }
-        else
-        {
-            apiEndpoint = Environment.GetEnvironmentVariable("API_ENDPOINT")
-                          ?? "http://localhost:5058/api/"; // Production endpoint
-        }
+
+        string apiEndpoint = Environment.GetEnvironmentVariable("API_ENDPOINT") ?? "http://127.0.0.1:8081/api/";
 
         Console.WriteLine($"API Endpoint: {apiEndpoint}");
         builder.Services.AddHttpClient<ApiService>(client =>

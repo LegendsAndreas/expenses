@@ -202,9 +202,6 @@
     </button>
 </div>
 
-<button class="btn btn-primary" type="button" @onclick="RecipeTest">
-    Test
-</button>
 <InputText @bind-Value="_search">
 
 </InputText>
@@ -339,12 +336,6 @@
     {
         expense.Items.Add(new ExpensesItem { Name = "", Price = 0 });
         _setHeight = true;
-    }
-
-    private async Task RecipeTest()
-    {
-        var recipes = await ApiService.GetRecipe(1);
-        Console.WriteLine(string.IsNullOrEmpty(recipes.msg) ? recipes.msg : recipes.recipe.Name);
     }
 
     private void AddRecipeCostToExpense(Recipe recipe, ExpensesItem item)
