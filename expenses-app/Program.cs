@@ -15,7 +15,7 @@ public class Program
 
         builder.Services.AddScoped<ExpensesService>(sp => new ExpensesService(sp.GetRequiredService<IJSRuntime>()));
 
-        string apiEndpoint = Environment.GetEnvironmentVariable("API_ENDPOINT") ?? "http://127.0.0.1:8081/api/";
+        string apiEndpoint = Environment.GetEnvironmentVariable("API_ENDPOINT") ?? "http://10.122.18.67/:8081/api/";
 
         Console.WriteLine($"API Endpoint: {apiEndpoint}");
         builder.Services.AddHttpClient<ApiService>(client =>
