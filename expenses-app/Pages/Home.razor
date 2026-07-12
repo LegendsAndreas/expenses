@@ -64,14 +64,23 @@
 
     <div class="home__expenses home__level-1">
         <h2>All Expenses</h2>
+        @{
+            int currentExpense = 0;
+        }
         @foreach (var expense in _allExpenses)
         {
-            string containerId = $"expense-container-{Guid.NewGuid()}";
+            int expenseIndex = currentExpense++; // Capture the current value
+            Guid guid = Guid.NewGuid();
+            string containerId = $"expense-container-{guid}";
             <div class="home__expenses__expense home__level-2">
-                <div class="mb-2 d-flex">
+                <div class="mb-2 d-flex js-init-adjust-input-size">
                     <InputText disabled="@(_disabledExpensesNames.Contains(expense))"
-                               class="form-control home__expenses__expense__title"
+                               class="form-control home__expenses__expense__title js-init-adjust-input-size-input"
+                               @oninput="() => AdjustInputSize(expenseIndex)"
+                               id="@($"expense-{expenseIndex}")"
                                @bind-Value="expense.Name"/>
+                    <span class="home__expenses__expense__input-span js-init-adjust-input-size-span"
+                          id="@($"span-{expenseIndex}")"></span>
                     @{ string expenseId = $"expense-{Guid.NewGuid()}"; }
                     <InputSelect disabled="@(_disabledExpensesNames.Contains(expense))"
                                  class="form-control home__expenses__expense__title"
@@ -202,16 +211,11 @@
     </button>
 </div>
 
-<InputText @bind-Value="_search">
-
-</InputText>
-
 @code {
 
     private List<Expenses> _allExpenses = [];
     private Expenses _newExpense = new();
     private HashSet<Expenses> _disabledExpensesNames = [];
-    private Recipe _currentRecipe = new();
     private float _totalMoney = 0;
     private string _totalMonthlyMoneyStr = "";
     private string _totalQuarterlyMoneyStr = "";
@@ -219,7 +223,6 @@
     private string _totalAnnuallyMoneyStr = "";
     private string _currentCurrency = "DKK";
     private bool _setHeight = false;
-    private string _search = "";
 
     protected override async Task OnInitializedAsync()
     {
@@ -244,6 +247,7 @@
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
+        await JsRuntime.InvokeVoidAsync("initAdjustInputSize");
         if (_setHeight)
         {
             await JsRuntime.InvokeVoidAsync("setHeight");
@@ -252,6 +256,12 @@
     }
 
     public void ChangeState() => StateHasChanged();
+
+    private async Task AdjustInputSize(int id)
+    {
+        await JsRuntime.InvokeVoidAsync("adjustInputSize", id);
+        StateHasChanged();
+    }
 
     private void PrintTotalMoney()
     {

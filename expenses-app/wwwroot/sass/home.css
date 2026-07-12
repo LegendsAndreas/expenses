@@ -58,7 +58,6 @@
   width: fit-content !important;
   font-size: 22px !important;
   font-weight: 500 !important;
-  max-width: 160px !important;
   background-color: var(--bs-body-bg);
   border-color: initial !important;
   transition: border-color 0.2s ease;
@@ -67,6 +66,20 @@
 .home__expenses__expense__title:disabled {
   background-color: transparent !important;
   border-color: transparent !important;
+}
+@media (max-width: 448px) {
+  .home__expenses__expense__title {
+    max-width: 220px;
+  }
+}
+.home__expenses__expense__input-span {
+  position: absolute;
+  visibility: hidden;
+  font-size: 22px !important;
+  font-weight: 500 !important;
+  padding: 0.375rem 0.75rem;
+  border-color: initial !important;
+  margin-right: 0.5rem;
 }
 .home__expenses__expense__select {
   width: fit-content !important;

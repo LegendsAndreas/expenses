@@ -72,7 +72,6 @@ $background-color: #FFFFFF;
         width: fit-content !important;
         font-size: 22px !important;
         font-weight: 500 !important;
-        max-width: 160px !important;
         background-color: var(--bs-body-bg);
         border-color: initial !important;
         transition: border-color 0.2s ease;
@@ -82,6 +81,20 @@ $background-color: #FFFFFF;
           background-color: transparent !important;
           border-color: transparent !important;
         }
+        
+        @media (max-width: 448px) {
+          max-width: 220px;
+        }
+      }
+      &__input-span {
+        position: absolute;
+        visibility: hidden;
+        // Has to match the input field CSS styling. 
+        font-size: 22px !important;
+        font-weight: 500 !important;
+        padding: .375rem .75rem;
+        border-color: initial !important;
+        margin-right: .5rem;
       }
       &__select {
         width: fit-content !important;

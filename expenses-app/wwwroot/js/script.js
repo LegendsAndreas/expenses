@@ -66,14 +66,38 @@ window.removeExpenseButton = function (itemId, containerId) {
         console.error(`[${new Date().toISOString()}] Expense with ID ${itemId} not found`);
         return;
     }
-    
+
     if (expense) {
         const style = getComputedStyle(expense);
         const marginTop = parseFloat(style.marginTop);
         const marginBottom = parseFloat(style.marginBottom);
         const expenseTotalHeight = expense.offsetHeight + marginTop + marginBottom;
-        const setHeight = document.querySelector("#" + containerId);
+        const setHeight = document.querySelector("#" + containerId + "-input");
         const setHeightHeight = setHeight.offsetHeight;
         setHeight.style.height = `${setHeightHeight - expenseTotalHeight}px`;
     }
 };
+
+window.adjustInputSize = function (id) {
+    console.log("adjustInputSize " + id);
+    const input = document.querySelector("#expense-" + id);
+    const span = document.querySelector("#span-" + id);
+
+    console.log(input);
+    span.textContent = input.value || ' ';
+    input.style.setProperty('width', span.offsetWidth + 'px', 'important');
+}
+
+window.initAdjustInputSize = function () {
+    console.log("initAdjustInputSize");
+    const inputWrappers = document.querySelectorAll(".js-init-adjust-input-size");
+
+    inputWrappers.forEach(wrapper => {
+        const input = wrapper.querySelector(".js-init-adjust-input-size-input");
+        const span = wrapper.querySelector(".js-init-adjust-input-size-span");
+        
+        span.textContent = input.value || ' ';
+        input.style.setProperty('width', span.offsetWidth + 'px', 'important');
+    })
+
+}
