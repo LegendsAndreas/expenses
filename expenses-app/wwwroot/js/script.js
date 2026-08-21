@@ -72,7 +72,7 @@ window.removeExpenseButton = function (itemId, containerId) {
         const marginTop = parseFloat(style.marginTop);
         const marginBottom = parseFloat(style.marginBottom);
         const expenseTotalHeight = expense.offsetHeight + marginTop + marginBottom;
-        const setHeight = document.querySelector("#" + containerId + "-input");
+        const setHeight = document.querySelector("#" + containerId);
         const setHeightHeight = setHeight.offsetHeight;
         setHeight.style.height = `${setHeightHeight - expenseTotalHeight}px`;
     }
@@ -95,7 +95,7 @@ window.initAdjustInputSize = function () {
     inputWrappers.forEach(wrapper => {
         const input = wrapper.querySelector(".js-init-adjust-input-size-input");
         const span = wrapper.querySelector(".js-init-adjust-input-size-span");
-        
+
         span.textContent = input.value || ' ';
         input.style.setProperty('width', span.offsetWidth + 'px', 'important');
     })
