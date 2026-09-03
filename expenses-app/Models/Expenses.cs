@@ -44,21 +44,56 @@ public class Expenses
         {
             if (item.Currency == "DKK")
             {
-                sum += item.Price * 1 * item.CountedDaysInAMonth;
+                sum += item.GetItemTotalPrice();
             }
             else if (item.Currency == "USD")
             {
-                sum += item.Price * 6.4f * item.CountedDaysInAMonth;
+                sum += item.GetItemTotalPrice();
             }
             else if (item.Currency == "EUR")
             {
-                sum += item.Price * 7.5f * item.CountedDaysInAMonth;
+                sum += item.GetItemTotalPrice();
             }
         }
 
         return sum / multiplier;
     }
+}
 
+public class ExpensesItem
+{
+    [Required] public string Name { get; set; } = "";
+    [Required] public string Currency { get; set; } = "";
+    [Required] 
+    [Range(1, 31)]
+    public int CountedDaysInAMonth { get; set; } = 1;
+
+    [Range(1, double.MaxValue, ErrorMessage = "Price must be greater than 0")]
+    public float Price { get; set; }
+    
+    public float GetItemTotalPrice()
+    {
+        return Price * CountedDaysInAMonth * GetCurrencyMultiplier();
+    }
+
+    public float GetCurrencyMultiplier()
+    {
+        if (Currency == "DKK")
+        {
+            return 1;
+        }
+        if (Currency == "USD")
+        {
+            return 6.4f;
+        }
+        if (Currency == "EUR")
+        {
+            return 7.5f;
+        }
+
+        throw new ArgumentException("Unsupported currency");
+    }
+    
     public string GetCurrencySymbol()
     {
         switch (Currency)
@@ -73,16 +108,4 @@ public class Expenses
                 throw new ArgumentException("Unsupported currency");
         }
     }
-}
-
-public class ExpensesItem
-{
-    [Required] public string Name { get; set; } = "";
-    [Required] public string Currency { get; set; } = "";
-    [Required] 
-    [Range(1, 31)]
-    public int CountedDaysInAMonth { get; set; } = 1;
-
-    [Range(1, double.MaxValue, ErrorMessage = "Price must be greater than 0")]
-    public float Price { get; set; }
 }

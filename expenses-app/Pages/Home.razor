@@ -95,7 +95,7 @@
                     </button>
                 </div>
                 <div class="home__expenses__expense__item js-set-height" id="@containerId">
-                    @foreach (var item in expense.Items)
+                    @foreach (ExpensesItem item in expense.Items)
                     {
                         var itemId = $"new-expense-item-{Guid.NewGuid()}";
                         <div class="home__level-3 mb-2" id="@itemId">
@@ -121,6 +121,9 @@
                                 </button>
                                 <RealTimeSearchRecipes
                                     CurrentRecipeDataHasChanged="@(value => AddRecipeCostToExpense(value, item))"/>
+                                <div class="form-control w-auto">
+                                    Total monthly: @item.GetItemTotalPrice()
+                                </div>
                             </div>
                         </div>
                     }
@@ -132,28 +135,32 @@
                             <div class="home__expenses__expense__total">
                                 Month:
                                 <span
-                                    class="home__expenses__expense__total__price">@expense.GetMonthlyPrice().ToString(".00")@expense.GetCurrencySymbol()</span>
+                                    class="home__expenses__expense__total__price">@expense.GetMonthlyPrice().ToString(".00")@expense.Items[0].GetCurrencySymbol()</span>
+                                <ExpensesSummaryPopup Month="1" Item="expense"/>
                             </div>
                         </div>
                         <div class="col-12 col-sm-6 col-md-6 col-lg-3 home__expenses__expense__total__mobile">
                             <div class="home__expenses__expense__total">
                                 Quarter:
                                 <span
-                                    class="home__expenses__expense__total__price">@((expense.GetMonthlyPrice() * 3).ToString(".00"))@expense.GetCurrencySymbol()</span>
+                                    class="home__expenses__expense__total__price">@((expense.GetMonthlyPrice() * 3).ToString(".00"))@expense.Items[0].GetCurrencySymbol()</span>
+                                <ExpensesSummaryPopup Month="3" Item="expense"/>
                             </div>
                         </div>
                         <div class="col-12 col-sm-6 col-md-6 col-lg-3 home__expenses__expense__total__mobile">
                             <div class="home__expenses__expense__total">
                                 Semiannual:
                                 <span
-                                    class="home__expenses__expense__total__price">@((expense.GetMonthlyPrice() * 6).ToString(".00"))@expense.GetCurrencySymbol()</span>
+                                    class="home__expenses__expense__total__price">@((expense.GetMonthlyPrice() * 6).ToString(".00"))@expense.Items[0].GetCurrencySymbol()</span>
+                                <ExpensesSummaryPopup Month="6" Item="expense"/>
                             </div>
                         </div>
                         <div class="col-12 col-sm-6 col-md-6 col-lg-3 home__expenses__expense__total__mobile">
                             <div class="home__expenses__expense__total">
                                 Annual:
                                 <span
-                                    class="home__expenses__expense__total__price">@((expense.GetMonthlyPrice() * 12).ToString(".00"))@expense.GetCurrencySymbol()</span>
+                                    class="home__expenses__expense__total__price">@((expense.GetMonthlyPrice() * 12).ToString(".00"))@expense.Items[0].GetCurrencySymbol()</span>
+                                <ExpensesSummaryPopup Month="12" Item="expense"/>
                             </div>
                         </div>
                     </div>

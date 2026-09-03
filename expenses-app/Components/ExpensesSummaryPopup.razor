@@ -1,0 +1,31 @@
+<span class="expenses-summary">
+    <i class="bi bi-info-circle" data-bs-toggle="tooltip" data-bs-title="Summary"></i>
+    <div class="expenses-summary__popup home__level-2">
+        <div class="expenses-summary__popup__expense">
+            @{var total = 0F;}
+            @foreach (ExpensesItem expense in Item.Items)
+            {
+                <div class="expenses-summary__popup__expense__item">
+                    <div class="text-decoration-underline">@SetPriceText(expense)</div>
+                    <div class="expenses-summary__popup__expense__item__new-price">@SetUpdatedPrice(expense, ref total)</div>
+                </div>
+            }
+        </div>
+    </div>
+</span>
+
+@code {
+
+    [Parameter] public required Expenses Item { get; set; }
+    [Parameter] public required int Month { get; set; }
+
+    private string SetPriceText(ExpensesItem expense)
+    {
+        return expense.Name + ": " + $"{expense.CountedDaysInAMonth} * {expense.Price} * {Month}" + " = " + $"{expense.GetItemTotalPrice() * Month}";
+    }
+
+    private string SetUpdatedPrice(ExpensesItem expense, ref float total)
+    {
+        return $"• {total} + {expense.GetItemTotalPrice() * Month} = {total += expense.GetItemTotalPrice() * Month}{expense.GetCurrencySymbol()}";
+    }
+}

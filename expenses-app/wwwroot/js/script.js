@@ -101,3 +101,31 @@ window.initAdjustInputSize = function () {
     })
 
 }
+
+window.initAddExpensesSummaryPopupOnHoverListeners = function () {
+    const expensesSummaryPopups = document.querySelectorAll(".js-toggle-expenses-popup");
+    if (expensesSummaryPopups.length === 0) {
+        console.error("No expenses summary popup found");
+    } else {
+        console.log("expensesSummaryPopup.length: " + expensesSummaryPopups.length);
+    }
+    expensesSummaryPopups.forEach(expensesSummaryPopup => {
+        console.log("initAddExpensesSummaryPopupOnHoverListeners");
+        let popup = expensesSummaryPopup.querySelector(".expenses-summary-popup");
+        popup.addEventListener("mouseover", () => popup.classList.add("expenses-summary-popup__show-popup"));
+        popup.addEventListener("mouseleave", () => popup.classList.remove("expenses-summary-popup__show-popup"));
+    });
+}
+
+window.showMe = function (event) {
+    if (!event) {
+        console.log("target not found");
+        return;
+    }
+    let popup = event.querySelector(".expenses-summary-popup");
+    if (!popup) {
+        console.log("popup not found");
+        return;
+    }
+    popup.classList.add("show-popup");
+}

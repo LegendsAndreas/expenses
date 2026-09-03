@@ -1,0 +1,28 @@
+.expenses-summary {
+  position: relative;
+  i::before {
+    background-color: #ffffff;
+    border-radius: 13px;
+  }
+  &__popup {
+    visibility: hidden;
+    opacity: 0;
+    position: absolute;
+    width: max-content;
+    top: 20px;
+    transition: opacity 0.3s ease;
+    &__expense {
+      &__item {
+        &__new-price {
+          font-weight: 400;
+        }
+      }
+    }
+  }
+  &:hover {
+    .expenses-summary__popup {
+      visibility: visible;
+      opacity: 1;
+    }
+  }
+}
