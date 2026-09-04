@@ -129,3 +129,35 @@ window.showMe = function (event) {
     }
     popup.classList.add("show-popup");
 }
+
+window.addHoverEvents = function () {
+    const expensesSummaries = document.querySelectorAll(".expenses-summary");
+    expensesSummaries.forEach(summary => {
+        const popup = summary.querySelector(".expenses-summary__popup");
+        if (popup) {
+            summary.addEventListener("mouseenter", () => {
+                const popupBounds = popup.getBoundingClientRect();
+                const windowBounds = document.documentElement.getBoundingClientRect();
+                console.log("popup: ", popupBounds);
+                console.log("window: ", windowBounds);
+            });
+            summary.addEventListener("mouseleave", () => {
+
+            });
+        } else {
+            console.log("popup not found");
+        }
+    })
+}
+
+window.adjustOutBoundSummaryPopups = function () {
+    const expensesSummaryPopups = document.querySelectorAll(".expenses-summary-popup");
+    expensesSummaryPopups.forEach(popup => {
+        const popupBounds = popup.getBoundingClientRect();
+        const windowBounds = document.documentElement.getBoundingClientRect();
+        const isPopupOutsideWindow = popupBounds.bottom > windowBounds.bottom;
+        if (isPopupOutsideWindow) {
+            popup.classList.add("expenses-summary-popup__show-popup");
+        }
+    })
+}

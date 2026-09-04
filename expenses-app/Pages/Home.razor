@@ -272,6 +272,11 @@
             await JsRuntime.InvokeVoidAsync("setHeight");
             _setHeight = false;
         }
+
+        if (firstRender)
+        {
+            await JsRuntime.InvokeVoidAsync("addHoverEvents");
+        }
     }
 
     public void ChangeState() => StateHasChanged();
