@@ -74,8 +74,8 @@ $background-color: #FFFFFF;
         font-weight: 500 !important;
         background-color: var(--bs-body-bg);
         border-color: initial !important;
-        transition: border-color 0.2s ease;
         margin-right: .5rem;
+        transition: border-color 0.2s ease;
 
         &:disabled {
           background-color: transparent !important;

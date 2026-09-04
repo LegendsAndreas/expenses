@@ -21,7 +21,7 @@
 
     private string SetPriceText(ExpensesItem expense)
     {
-        return expense.Name + ": " + $"{expense.CountedDaysInAMonth} * {expense.Price} * {Month}" + " = " + $"{expense.GetItemTotalPrice() * Month}";
+        return expense.Name + ": " + $"{expense.CountedDaysInAMonth} * {expense.Price} = {expense.CountedDaysInAMonth * expense.Price} * {Month}" + " = " + $"{expense.GetItemTotalPrice() * Month}";
     }
 
     private string SetUpdatedPrice(ExpensesItem expense, ref float total)

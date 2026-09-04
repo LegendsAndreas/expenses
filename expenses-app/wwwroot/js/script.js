@@ -81,11 +81,11 @@ window.removeExpenseButton = function (itemId, containerId) {
 window.adjustInputSize = function (id) {
     console.log("adjustInputSize " + id);
     const input = document.querySelector("#expense-" + id);
-    const span = document.querySelector("#span-" + id);
+    const dummy = document.querySelector("#span-" + id);
 
-    console.log(input);
-    span.textContent = input.value || ' ';
-    input.style.setProperty('width', span.offsetWidth + 'px', 'important');
+    console.log(dummy);
+    dummy.textContent = input.value || ' ';
+    input.style.setProperty('width', dummy.offsetWidth + 'px', 'important');
 }
 
 window.initAdjustInputSize = function () {

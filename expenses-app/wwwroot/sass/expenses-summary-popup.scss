@@ -9,14 +9,19 @@
     opacity: 0;
     position: absolute;
     width: max-content;
+    max-width: 300px;
     top: 20px;
     transition: opacity 0.3s ease;
+    z-index: 1;
     &__expense {
       &__item {
         &__new-price {
           font-weight: 400;
         }
       }
+    }
+    @media (max-width: 1300px) {
+      left: -280px;
     }
   }
   &:hover {

@@ -58,6 +58,33 @@ public class Expenses
 
         return sum / multiplier;
     }
+    
+    public string GetCurrencySymbol()
+    {
+        switch (Currency)
+        {
+            case "DKK":
+                return ",-kr";
+            case "USD":
+                return ",-$";
+            case "EUR":
+                return ",-€";
+            default:
+                Console.WriteLine("No currency set, or unsupported currency");
+                return "";
+        }
+    }
+
+    public void PrintEverything()
+    {
+        Console.WriteLine("|----------------Printing everything----------------|");
+        Console.WriteLine($"Name: {Name}");
+        Console.WriteLine($"Currency: {Currency}");
+        foreach (var item in Items)
+        {
+            Console.WriteLine($"{item.Name}: {item.Price}");
+        }
+    }
 }
 
 public class ExpensesItem
@@ -78,20 +105,13 @@ public class ExpensesItem
 
     public float GetCurrencyMultiplier()
     {
-        if (Currency == "DKK")
+        return Currency switch
         {
-            return 1;
-        }
-        if (Currency == "USD")
-        {
-            return 6.4f;
-        }
-        if (Currency == "EUR")
-        {
-            return 7.5f;
-        }
-
-        throw new ArgumentException("Unsupported currency");
+            "DKK" => 1,
+            "USD" => 6.4f,
+            "EUR" => 7.5f,
+            _ => 1
+        };
     }
     
     public string GetCurrencySymbol()
@@ -105,7 +125,17 @@ public class ExpensesItem
             case "EUR":
                 return ",-€";
             default:
-                throw new ArgumentException("Unsupported currency");
+                Console.WriteLine("No currency set, or unsupported currency");
+                return "";
         }
+    }
+
+    public void PrintItem()
+    {
+        Console.WriteLine($"Name: {Name}");
+        Console.WriteLine($"Currency: {Currency}");
+        Console.WriteLine($"Price: {Price}");
+        Console.WriteLine($"Counted days in a month: {CountedDaysInAMonth}");
+        Console.WriteLine($"Item total price: {GetItemTotalPrice()}");
     }
 }

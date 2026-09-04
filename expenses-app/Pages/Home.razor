@@ -67,7 +67,7 @@
         @{
             int currentExpense = 0;
         }
-        @foreach (var expense in _allExpenses)
+        @foreach (Expenses expense in _allExpenses)
         {
             int expenseIndex = currentExpense++; // Capture the current value
             Guid guid = Guid.NewGuid();
@@ -119,11 +119,15 @@
                                         @onclick="() => AddExpenseItemToExisting(expense)">
                                     +
                                 </button>
+                                @if (!string.IsNullOrEmpty(item.Currency))
+                                {
+                                    <div class="form-control w-auto">
+                                        <i class="bi bi-cash-stack"></i>
+                                        @item.GetItemTotalPrice()
+                                    </div>
+                                }
                                 <RealTimeSearchRecipes
                                     CurrentRecipeDataHasChanged="@(value => AddRecipeCostToExpense(value, item))"/>
-                                <div class="form-control w-auto">
-                                    Total monthly: @item.GetItemTotalPrice()
-                                </div>
                             </div>
                         </div>
                     }
@@ -134,33 +138,41 @@
                         <div class="col-12 col-sm-6 col-md-6 col-lg-3 home__expenses__expense__total__mobile">
                             <div class="home__expenses__expense__total">
                                 Month:
+                                <span>
                                 <span
-                                    class="home__expenses__expense__total__price">@expense.GetMonthlyPrice().ToString(".00")@expense.Items[0].GetCurrencySymbol()</span>
-                                <ExpensesSummaryPopup Month="1" Item="expense"/>
+                                    class="home__expenses__expense__total__price">@expense.GetMonthlyPrice().ToString(".00")@expense.GetCurrencySymbol()</span>
+                                    <ExpensesSummaryPopup Month="1" Item="expense"/>
+                                </span>
                             </div>
                         </div>
                         <div class="col-12 col-sm-6 col-md-6 col-lg-3 home__expenses__expense__total__mobile">
                             <div class="home__expenses__expense__total">
                                 Quarter:
+                                <span>
                                 <span
-                                    class="home__expenses__expense__total__price">@((expense.GetMonthlyPrice() * 3).ToString(".00"))@expense.Items[0].GetCurrencySymbol()</span>
+                                    class="home__expenses__expense__total__price">@((expense.GetMonthlyPrice() * 3).ToString(".00"))@expense.GetCurrencySymbol()</span>
                                 <ExpensesSummaryPopup Month="3" Item="expense"/>
+                                </span>
                             </div>
                         </div>
                         <div class="col-12 col-sm-6 col-md-6 col-lg-3 home__expenses__expense__total__mobile">
                             <div class="home__expenses__expense__total">
                                 Semiannual:
+                                <span>
                                 <span
-                                    class="home__expenses__expense__total__price">@((expense.GetMonthlyPrice() * 6).ToString(".00"))@expense.Items[0].GetCurrencySymbol()</span>
+                                    class="home__expenses__expense__total__price">@((expense.GetMonthlyPrice() * 6).ToString(".00"))@expense.GetCurrencySymbol()</span>
                                 <ExpensesSummaryPopup Month="6" Item="expense"/>
+                                </span>
                             </div>
                         </div>
                         <div class="col-12 col-sm-6 col-md-6 col-lg-3 home__expenses__expense__total__mobile">
                             <div class="home__expenses__expense__total">
                                 Annual:
+                                <span>
                                 <span
-                                    class="home__expenses__expense__total__price">@((expense.GetMonthlyPrice() * 12).ToString(".00"))@expense.Items[0].GetCurrencySymbol()</span>
+                                    class="home__expenses__expense__total__price">@((expense.GetMonthlyPrice() * 12).ToString(".00"))@expense.GetCurrencySymbol()</span>
                                 <ExpensesSummaryPopup Month="12" Item="expense"/>
+                                </span>
                             </div>
                         </div>
                     </div>
@@ -316,6 +328,7 @@
         await ExpenseService.UpdateAllExpenses(_allExpenses);
         _newExpense = new Expenses();
         PrintTotalMoney();
+        _setHeight = true;
     }
 
     private void AddNewItem()
