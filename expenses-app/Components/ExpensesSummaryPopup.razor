@@ -1,8 +1,8 @@
 <span class="expenses-summary">
-    <i class="bi bi-info-circle" data-bs-toggle="tooltip" data-bs-title="Summary"></i>
+    <img src="images/info-circle.svg" alt="Info circle" data-bs-toggle="tooltip" data-bs-title="Summary"/>
     <div class="expenses-summary__popup home__level-2">
         <div class="expenses-summary__popup__expense">
-            @{var total = 0F;}
+            @{ var total = 0F; }
             @foreach (ExpensesItem expense in Item.Items)
             {
                 <div class="expenses-summary__popup__expense__item">

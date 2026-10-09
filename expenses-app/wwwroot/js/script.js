@@ -130,25 +130,37 @@ window.showMe = function (event) {
     popup.classList.add("show-popup");
 }
 
-window.addHoverEvents = function () {
-    const expensesSummaries = document.querySelectorAll(".expenses-summary");
-    expensesSummaries.forEach(summary => {
-        const popup = summary.querySelector(".expenses-summary__popup");
-        if (popup) {
-            summary.addEventListener("mouseenter", () => {
-                const popupBounds = popup.getBoundingClientRect();
-                const windowBounds = document.documentElement.getBoundingClientRect();
-                console.log("popup: ", popupBounds);
-                console.log("window: ", windowBounds);
-            });
-            summary.addEventListener("mouseleave", () => {
+window.initSummaryPopupClamping = () => {
+    document.addEventListener('mouseover', (e) => {
+        const summary = e.target.closest('.expenses-summary');
+        if (!summary) return;
 
-            });
-        } else {
-            console.log("popup not found");
+        const popup = summary.querySelector('.expenses-summary__popup');
+        if (!popup) return;
+
+        // Reset any previous shift, then measure after the :hover styles apply
+        popup.style.transform = '';
+        const rect = popup.getBoundingClientRect();
+        console.log("Window width: " + window.innerWidth + "\n Window height: " + window.innerHeight)
+        console.log("rect width: " + rect.width + "\n height: " + rect.height + "\n top: " + rect.top + "\n right: " + rect.right + "\n bottom: " + rect.bottom + "\n left: " + rect.left);
+        if (rect.width === 0) return; // not visible
+
+        const margin = 20;
+        let shiftX = 0;
+        if (rect.right > window.innerWidth - margin) {
+            shiftX = (window.innerWidth - margin) - rect.right;
+        } else if (rect.left < margin) {
+            shiftX = margin - rect.left;
         }
-    })
-}
+
+        let shiftY = 0;
+        if (rect.bottom > window.innerHeight - margin) {
+            shiftY = (window.innerHeight - margin) - rect.bottom;
+        }
+
+        popup.style.transform = `translate(${shiftX}px, ${shiftY}px)`;
+    });
+};
 
 window.adjustOutBoundSummaryPopups = function () {
     const expensesSummaryPopups = document.querySelectorAll(".expenses-summary-popup");

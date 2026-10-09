@@ -91,7 +91,7 @@
                     </InputSelect>
                     <button class="btn btn-secondary home__expenses__expense__disable-btn" type="button"
                             @onclick="() => ToggleExpenseTitle(expense, expenseId)">
-                        <i class="bi bi-pencil-square" id="@expenseId"></i>
+                        <img src="images/pencil-square.svg" alt="Pencil square..." id="@expenseId" style="filter: invert(1);"/>
                     </button>
                 </div>
                 <div class="home__expenses__expense__item js-set-height" id="@containerId">
@@ -121,8 +121,8 @@
                                 </button>
                                 @if (!string.IsNullOrEmpty(item.Currency))
                                 {
-                                    <div class="form-control w-auto">
-                                        <i class="bi bi-cash-stack"></i>
+                                    <div class="form-control w-auto d-flex align-items-center">
+                                        <img src="images/cash-stack.svg" class="home__expenses__expense__item__cash" alt="Cash stack"/>
                                         @item.GetItemTotalPrice()
                                     </div>
                                 }
@@ -275,7 +275,7 @@
 
         if (firstRender)
         {
-            await JsRuntime.InvokeVoidAsync("addHoverEvents");
+            await JsRuntime.InvokeVoidAsync("initSummaryPopupClamping");
         }
     }
 
