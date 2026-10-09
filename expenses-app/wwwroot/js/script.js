@@ -131,35 +131,56 @@ window.showMe = function (event) {
 }
 
 window.initSummaryPopupClamping = () => {
-    document.addEventListener('mouseover', (e) => {
-        const summary = e.target.closest('.expenses-summary');
-        if (!summary) return;
+    if (window._clampInit) return;
+    window._clampInit = true;
 
+    const clampPopup = (summary) => {
         const popup = summary.querySelector('.expenses-summary__popup');
         if (!popup) return;
 
-        // Reset any previous shift, then measure after the :hover styles apply
         popup.style.transform = '';
         const rect = popup.getBoundingClientRect();
-        console.log("Window width: " + window.innerWidth + "\n Window height: " + window.innerHeight)
-        console.log("rect width: " + rect.width + "\n height: " + rect.height + "\n top: " + rect.top + "\n right: " + rect.right + "\n bottom: " + rect.bottom + "\n left: " + rect.left);
         if (rect.width === 0) return; // not visible
 
         const margin = 20;
+        const vw = document.documentElement.clientWidth; // more reliable than innerWidth on mobile
+        const vh = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+
         let shiftX = 0;
-        if (rect.right > window.innerWidth - margin) {
-            shiftX = (window.innerWidth - margin) - rect.right;
+        if (rect.right > vw - margin) {
+            shiftX = (vw - margin) - rect.right;
         } else if (rect.left < margin) {
             shiftX = margin - rect.left;
         }
 
         let shiftY = 0;
-        if (rect.bottom > window.innerHeight - margin) {
-            shiftY = (window.innerHeight - margin) - rect.bottom;
+        if (rect.bottom > vh - margin) {
+            shiftY = (vh - margin) - rect.bottom;
         }
 
         popup.style.transform = `translate(${shiftX}px, ${shiftY}px)`;
-    });
+    };
+
+    const handler = (e) => {
+        const summary = e.target.closest('.expenses-summary');
+        if (!summary) return;
+        // Wait a frame so :hover / :focus / :active / class changes are applied before measuring
+        requestAnimationFrame(() => clampPopup(summary));
+    };
+
+    ['pointerover', 'pointerdown', 'touchstart', 'focusin', 'click'].forEach((type) =>
+        document.addEventListener(type, handler, { passive: true })
+    );
+
+    // Startup run, after layout is ready
+    const initial = () =>
+        document.querySelectorAll('.expenses-summary').forEach(clampPopup);
+
+    if (document.readyState === 'complete') {
+        requestAnimationFrame(initial);
+    } else {
+        window.addEventListener('load', () => requestAnimationFrame(initial), { once: true });
+    }
 };
 
 window.adjustOutBoundSummaryPopups = function () {
