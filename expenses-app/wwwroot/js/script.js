@@ -80,7 +80,7 @@ window.removeExpenseButton = function (itemId, containerId) {
 
 window.adjustInputSize = function (id) {
     console.log("adjustInputSize " + id);
-    const input = document.querySelector("#expense-" + id);
+    const input = document.querySelector("#expenses-" + id);
     const dummy = document.querySelector("#span-" + id);
 
     console.log(dummy);

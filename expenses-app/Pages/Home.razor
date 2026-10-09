@@ -77,7 +77,7 @@
                     <InputText disabled="@(_disabledExpensesNames.Contains(expense))"
                                class="form-control home__expenses__expense__title js-init-adjust-input-size-input"
                                @oninput="() => AdjustInputSize(expenseIndex)"
-                               id="@($"expense-{expenseIndex}")"
+                               id="@($"expenses-{expenseIndex}")"
                                @bind-Value="expense.Name"/>
                     <span class="home__expenses__expense__input-span js-init-adjust-input-size-span"
                           id="@($"span-{expenseIndex}")"></span>
