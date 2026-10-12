@@ -1,6 +1,6 @@
 {
-  "name": "ExpensesPwa",
-  "short_name": "ExpensesPwa",
+  "name": "Expenses",
+  "short_name": "Expenses",
   "id": "./",
   "start_url": "./",
   "display": "standalone",
