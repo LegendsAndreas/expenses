@@ -35,16 +35,49 @@ public class ExpensesService
         return expenses;
     }
     
-    public async Task UpdateAllExpenses(List<Models.Expenses> expenses)
+    public async Task<List<Models.Expenses>?> GetDailyExpenses(DateOnly date)
     {
-        Console.WriteLine("Updating expenses");
-        // Print all expenses
-        foreach (var expense in expenses)
+        string localStorageExpenses = await _jsRuntime.InvokeAsync<string>("localStorage.getItem", $"daily-expense-{date.ToString("dd-MM-yyyy")}");
+        
+        if (string.IsNullOrEmpty(localStorageExpenses))
         {
-            expense.PrintExpenses();
+            Console.WriteLine("No expenses found in local storage");
+            return null;
+        }
+
+        List<Models.Expenses>? expenses = null;
+        try
+        {
+            expenses = JsonSerializer.Deserialize<List<Models.Expenses>>(localStorageExpenses);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
         }
         
+        return expenses;
+    }
+    
+    public async Task UpdateExpenses(List<Models.Expenses> expenses)
+    {
+        Console.WriteLine("Updating expenses");
+        
         await _jsRuntime.InvokeVoidAsync("localStorage.setItem", "expenses", JsonSerializer.Serialize(expenses));
+        await _jsRuntime.InvokeVoidAsync("alert", "Expenses updated successfully");
+    }
+    
+    public async Task UpdateAllExpenses(List<Models.Expenses> expenses, List<Models.Expenses>? dailyExpenses)
+    {
+        Console.WriteLine("Updating expenses");
+        
+        await _jsRuntime.InvokeVoidAsync("localStorage.setItem", "expenses", JsonSerializer.Serialize(expenses));
+
+        if (dailyExpenses != null)
+        {
+            await _jsRuntime.InvokeVoidAsync("localStorage.setItem", $"daily-expense-{dailyExpenses.First().Name}", JsonSerializer.Serialize(dailyExpenses));
+        }
+        
         await _jsRuntime.InvokeVoidAsync("alert", "Expenses updated successfully");
     }
     
@@ -53,8 +86,18 @@ public class ExpensesService
         await _jsRuntime.InvokeVoidAsync("exportExpenses");
     }
     
+    public async Task ExportDailyExpenses(DateOnly date)
+    {
+        await _jsRuntime.InvokeVoidAsync("exportDailyExpenses", date.ToString("dd-MM-yyyy"));
+    }
+    
     public async Task ImportExpenses()
     {
         await _jsRuntime.InvokeVoidAsync("importExpenses");
+    }
+    
+    public async Task ImportDailyExpenses()
+    {
+        await _jsRuntime.InvokeVoidAsync("importDailyExpenses");
     }
 }

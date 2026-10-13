@@ -91,7 +91,8 @@
                     </InputSelect>
                     <button class="btn btn-secondary home__expenses__expense__disable-btn" type="button"
                             @onclick="() => ToggleExpenseTitle(expense, expenseId)">
-                        <img src="images/pencil-square.svg" alt="Pencil square..." id="@expenseId" style="filter: invert(1);"/>
+                        <img src="images/pencil-square.svg" alt="Pencil square..." id="@expenseId"
+                             style="filter: invert(1);"/>
                     </button>
                 </div>
                 <div class="home__expenses__expense__item js-set-height" id="@containerId">
@@ -122,8 +123,9 @@
                                 @if (!string.IsNullOrEmpty(item.Currency))
                                 {
                                     <div class="form-control w-auto d-flex align-items-center">
-                                        <img src="images/cash-stack.svg" class="home__expenses__expense__item__cash" alt="Cash stack"/>
-                                        @item.GetItemTotalPrice()
+                                        <img src="images/cash-stack.svg" class="home__expenses__expense__item__cash"
+                                             alt="Cash stack"/>
+                                        @item.GetItemTotalPriceAndConvertToListCurrency(expense.Currency).ToString("0.00")
                                     </div>
                                 }
                                 <RealTimeSearchRecipes
@@ -139,8 +141,8 @@
                             <div class="home__expenses__expense__total">
                                 Month:
                                 <span>
-                                <span
-                                    class="home__expenses__expense__total__price">@expense.GetMonthlyPrice().ToString(".00")@expense.GetCurrencySymbol()</span>
+                                    <span
+                                        class="home__expenses__expense__total__price">@expense.GetMonthlyPrice().ToString(".00")@expense.GetCurrencySymbol()</span>
                                     <ExpensesSummaryPopup Month="1" Item="expense"/>
                                 </span>
                             </div>
@@ -149,9 +151,9 @@
                             <div class="home__expenses__expense__total">
                                 Quarter:
                                 <span>
-                                <span
-                                    class="home__expenses__expense__total__price">@((expense.GetMonthlyPrice() * 3).ToString(".00"))@expense.GetCurrencySymbol()</span>
-                                <ExpensesSummaryPopup Month="3" Item="expense"/>
+                                    <span
+                                        class="home__expenses__expense__total__price">@((expense.GetMonthlyPrice() * 3).ToString(".00"))@expense.GetCurrencySymbol()</span>
+                                    <ExpensesSummaryPopup Month="3" Item="expense"/>
                                 </span>
                             </div>
                         </div>
@@ -159,9 +161,9 @@
                             <div class="home__expenses__expense__total">
                                 Semiannual:
                                 <span>
-                                <span
-                                    class="home__expenses__expense__total__price">@((expense.GetMonthlyPrice() * 6).ToString(".00"))@expense.GetCurrencySymbol()</span>
-                                <ExpensesSummaryPopup Month="6" Item="expense"/>
+                                    <span
+                                        class="home__expenses__expense__total__price">@((expense.GetMonthlyPrice() * 6).ToString(".00"))@expense.GetCurrencySymbol()</span>
+                                    <ExpensesSummaryPopup Month="6" Item="expense"/>
                                 </span>
                             </div>
                         </div>
@@ -169,9 +171,9 @@
                             <div class="home__expenses__expense__total">
                                 Annual:
                                 <span>
-                                <span
-                                    class="home__expenses__expense__total__price">@((expense.GetMonthlyPrice() * 12).ToString(".00"))@expense.GetCurrencySymbol()</span>
-                                <ExpensesSummaryPopup Month="12" Item="expense"/>
+                                    <span
+                                        class="home__expenses__expense__total__price">@((expense.GetMonthlyPrice() * 12).ToString(".00"))@expense.GetCurrencySymbol()</span>
+                                    <ExpensesSummaryPopup Month="12" Item="expense"/>
                                 </span>
                             </div>
                         </div>
@@ -217,18 +219,183 @@
         </InputSelect>
     </div>
 
+    @*Without changing too much of the same code, we still loop through as list, even tho we dont need to. 
+    We might also need to do so in the future anyway*@
+    @if (_currentDailyExpense == null)
+    {
+        <button class="btn btn-primary" type="button" @onclick="StartNewDailyExpense">New Daily Expense</button>
+    }
+    else
+    {
+        <div class="home__expenses home__level-1">
+            <h2>Daily Expenses</h2>
+            @{
+                int currentDailyExpenses = 0;
+            }
+            @foreach (Expenses expense in _currentDailyExpense)
+            {
+                int expenseIndex = currentDailyExpenses++; // Capture the current value
+                Guid guid = Guid.NewGuid();
+                string containerId = $"expense-container-{guid}";
+                <div class="home__expenses__expense home__level-2">
+                    <div class="mb-2 d-flex js-init-adjust-input-size">
+                        <InputText disabled="true"
+                                   class="form-control home__expenses__expense__title js-init-adjust-input-size-input"
+                                   @oninput="() => AdjustInputSize(expenseIndex)"
+                                   id="@($"expenses-{expenseIndex}")"
+                                   @bind-Value="expense.Name"/>
+                        <span class="home__expenses__expense__input-span js-init-adjust-input-size-span"
+                              id="@($"span-{expenseIndex}")"></span>
+                        @{ string expenseId = $"expense-{Guid.NewGuid()}"; }
+                        <InputSelect disabled="@(_disabledExpensesNames.Contains(expense))"
+                                     class="form-control home__expenses__expense__title"
+                                     @bind-Value="expense.Currency">
+                            <option value="DKK">DKK</option>
+                            <option value="USD">USD</option>
+                            <option value="EUR">EUR</option>
+                        </InputSelect>
+                        <button class="btn btn-secondary home__expenses__expense__disable-btn" type="button"
+                                @onclick="() => ToggleExpenseTitle(expense, expenseId)">
+                            <img src="images/pencil-square.svg" alt="Pencil square..." id="@expenseId"
+                                 style="filter: invert(1);"/>
+                        </button>
+                    </div>
+                    <div class="home__expenses__expense__item js-set-height" id="@containerId">
+                        @foreach (ExpensesItem item in expense.Items)
+                        {
+                            var itemId = $"new-expense-item-{Guid.NewGuid()}";
+                            <div class="home__level-3 mb-2" id="@itemId">
+                                <div class="d-flex gap-2 mb-2">
+                                    <InputText class="form-control" @bind-Value="item.Name"/>
+                                    <InputNumber class="form-control" TValue="float" @bind-Value="item.Price"/>
+                                </div>
+                                <div class="d-flex flex-wrap gap-2">
+                                    <SelectCountedDaysInAMonth Item="@item" OnChanged="ChangeState"/>
+                                    <InputSelect class="form-control home__expenses__expense__select"
+                                                 @bind-Value="item.Currency">
+                                        <option value="DKK">DKK</option>
+                                        <option value="USD">USD</option>
+                                        <option value="EUR">EUR</option>
+                                    </InputSelect>
+                                    <button class="btn btn-danger" type="button"
+                                            @onclick="() => RemoveExpenseItemFromExpenseList(expense, item, itemId, containerId)">
+                                        X
+                                    </button>
+                                    <button class="btn btn-success" type="button"
+                                            @onclick="() => AddExpenseItemToExisting(expense)">
+                                        +
+                                    </button>
+                                    @if (!string.IsNullOrEmpty(item.Currency))
+                                    {
+                                        <div class="form-control w-auto d-flex align-items-center">
+                                            <img src="images/cash-stack.svg" class="home__expenses__expense__item__cash"
+                                                 alt="Cash stack"/>
+                                            @item.GetItemTotalPriceAndConvertToListCurrency(expense.Currency).ToString("0.00")
+                                        </div>
+                                    }
+                                    <RealTimeSearchRecipes
+                                        CurrentRecipeDataHasChanged="@(value => AddRecipeCostToExpense(value, item))"/>
+                                </div>
+                            </div>
+                        }
+                    </div>
+
+                    <div class="home__expenses__expense__total">
+                        <div class="row">
+                            <div class="col-12 col-sm-6 col-md-6 col-lg-3 home__expenses__expense__total__mobile">
+                                <div class="home__expenses__expense__total">
+                                    Month:
+                                    <span>
+                                        <span
+                                            class="home__expenses__expense__total__price">@expense.GetMonthlyPrice().ToString(".00")@expense.GetCurrencySymbol()</span>
+                                        <ExpensesSummaryPopup Month="1" Item="expense"/>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="col-12 col-sm-6 col-md-6 col-lg-3 home__expenses__expense__total__mobile">
+                                <div class="home__expenses__expense__total">
+                                    Quarter:
+                                    <span>
+                                        <span
+                                            class="home__expenses__expense__total__price">@((expense.GetMonthlyPrice() * 3).ToString(".00"))@expense.GetCurrencySymbol()</span>
+                                        <ExpensesSummaryPopup Month="3" Item="expense"/>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="col-12 col-sm-6 col-md-6 col-lg-3 home__expenses__expense__total__mobile">
+                                <div class="home__expenses__expense__total">
+                                    Semiannual:
+                                    <span>
+                                        <span
+                                            class="home__expenses__expense__total__price">@((expense.GetMonthlyPrice() * 6).ToString(".00"))@expense.GetCurrencySymbol()</span>
+                                        <ExpensesSummaryPopup Month="6" Item="expense"/>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="col-12 col-sm-6 col-md-6 col-lg-3 home__expenses__expense__total__mobile">
+                                <div class="home__expenses__expense__total">
+                                    Annual:
+                                    <span>
+                                        <span
+                                            class="home__expenses__expense__total__price">@((expense.GetMonthlyPrice() * 12).ToString(".00"))@expense.GetCurrencySymbol()</span>
+                                        <ExpensesSummaryPopup Month="12" Item="expense"/>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button class="btn btn-dark" type="button" @onclick="() => RemoveDailyExpense()">
+                        Remove Daily expense
+                    </button>
+                </div>
+            }
+        </div>
+    }
+
     <button class="btn btn-primary" type="button" @onclick="UpdateAllExpenses">
-        Update All Expenses
+        Update Expenses
     </button>
 
-    <button class="btn btn-success" type="button" @onclick="ExportExpenses">
-        Export expenses
-    </button>
+    <div class="d-flex gap-2">
+        <button class="btn btn-success w-50" type="button" @onclick="ExportExpenses">
+            Export expenses
+        </button>
+        <button class="btn btn-warning w-50" type="button" @onclick="EnterDateModal">
+            Export daily expenses
+        </button>
+    </div>
 
-    <button class="btn btn-warning" type="button" @onclick="ImportExpenses">
-        Import expenses
-    </button>
+    <div class="d-flex gap-2">
+        <button class="btn btn-success w-50" type="button" @onclick="ImportExpenses">
+            Import expenses
+        </button>
+        <button class="btn btn-warning w-50" type="button" @onclick="ImportDailyExpenses">
+            Import daily expenses
+        </button>
+    </div>
 </div>
+
+<div class="modal fade" id="enterDate" tabindex="-1" aria-labelledby="areYouSure" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="areYouSure">Enter date</h5>
+                <InputDate @bind-Value="_dateToGetDailyExpenses"></InputDate>
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal" aria-label="Close">Close</button>
+                <button class="btn btn-primary" data-bs-dismiss="modal" @onclick="ExportDailyExpenses">Export</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function showEnterDateModal() {
+        const modalElement = document.getElementById("enterDate");
+        const modalInstance = new bootstrap.Modal(modalElement);
+        modalInstance.show();
+    }
+</script>
 
 @code {
 
@@ -242,6 +409,9 @@
     private string _totalAnnuallyMoneyStr = "";
     private string _currentCurrency = "DKK";
     private bool _setHeight = false;
+    private readonly DateOnly _currentDate = DateOnly.FromDateTime(DateTime.Now);
+    private List<Expenses>? _currentDailyExpense;
+    private DateOnly _dateToGetDailyExpenses = DateOnly.FromDateTime(DateTime.Now);
 
     protected override async Task OnInitializedAsync()
     {
@@ -254,9 +424,19 @@
 
         _allExpenses = expenses;
 
+        var dailyExpenses = await ExpenseService.GetDailyExpenses(_currentDate);
+        if (dailyExpenses != null)
+        {
+            _currentDailyExpense = dailyExpenses;
+
+            foreach (var expense in _currentDailyExpense)
+            {
+                _disabledExpensesNames.Add(expense);
+            }
+        }
+
         foreach (var expense in _allExpenses)
         {
-            // expense.PrintExpenses();
             _disabledExpensesNames.Add(expense);
         }
 
@@ -330,7 +510,7 @@
     private async Task AddNewExpense()
     {
         _allExpenses.Add(_newExpense);
-        await ExpenseService.UpdateAllExpenses(_allExpenses);
+        await ExpenseService.UpdateExpenses(_allExpenses);
         _newExpense = new Expenses();
         PrintTotalMoney();
         _setHeight = true;
@@ -348,6 +528,12 @@
         PrintTotalMoney();
     }
 
+    private void RemoveDailyExpense()
+    {
+        _currentDailyExpense = null;
+        PrintTotalMoney();
+    }
+
     private async Task RemoveExpenseItemFromExpenseList(Expenses expense, ExpensesItem item, string itemId, string containerId)
     {
         expense.Items.Remove(item);
@@ -357,7 +543,7 @@
 
     private async Task UpdateAllExpenses()
     {
-        await ExpenseService.UpdateAllExpenses(_allExpenses);
+        await ExpenseService.UpdateAllExpenses(_allExpenses, _currentDailyExpense);
         PrintTotalMoney();
     }
 
@@ -379,6 +565,36 @@
         item.Price = recipe.Cost;
     }
 
+    private void StartNewDailyExpense()
+    {
+        _currentDailyExpense = new()
+        {
+            new Expenses()
+            {
+                Name = DateOnly.FromDateTime(DateTime.Now).ToString("dd-MM-yyyy"),
+                Currency = "DKK",
+                Items = new List<ExpensesItem>
+                {
+                    new ExpensesItem { Name = "New", Currency = "DKK", CountedDaysInAMonth = 1, Price = 0 },
+                }
+            }
+        };
+        _setHeight = true;
+    }
+
     private async Task ExportExpenses() => await ExpenseService.ExportExpenses();
+    
+    private async Task EnterDateModal()
+    {
+        await JsRuntime.InvokeVoidAsync("showEnterDateModal");
+    }
+    
+    private async Task ExportDailyExpenses() => await ExpenseService.ExportDailyExpenses(_dateToGetDailyExpenses);
     private async Task ImportExpenses() => await ExpenseService.ImportExpenses();
+
+    private async Task ImportDailyExpenses()
+    {
+        await ExpenseService.ImportDailyExpenses();
+    }
+
 }

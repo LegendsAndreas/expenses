@@ -98,12 +98,28 @@ public class ExpensesItem
     [Range(1, double.MaxValue, ErrorMessage = "Price must be greater than 0")]
     public float Price { get; set; }
     
+    public float GetItemTotalPriceAndConvertToListCurrency(string listCurrency)
+    {
+        return Price * CountedDaysInAMonth * GetCurrencyMultiplier() / GetCurrencyMultiplier(listCurrency);
+    }
+    
     public float GetItemTotalPrice()
     {
         return Price * CountedDaysInAMonth * GetCurrencyMultiplier();
     }
 
-    public float GetCurrencyMultiplier()
+    private float GetCurrencyMultiplier(string currency)
+    {
+        return currency switch
+        {
+            "DKK" => 1,
+            "USD" => 6.4f,
+            "EUR" => 7.5f,
+            _ => 1
+        };
+    }
+
+    private float GetCurrencyMultiplier()
     {
         return Currency switch
         {

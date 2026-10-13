@@ -16,6 +16,24 @@
     URL.revokeObjectURL(url);
 };
 
+window.exportDailyExpenses = (dateStr) => {
+    const expenses = localStorage.getItem("daily-expense-" + dateStr);
+    if (!expenses) {
+        alert("No expenses found in local storage");
+        return;
+    }
+
+    const blob = new Blob([expenses], {type: "application/json"});
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "expenses.json";
+    a.click();
+
+    URL.revokeObjectURL(url);
+};
+
 window.importExpenses = () => {
     console.log("Importing expenses...");
     const fileInput = document.createElement("input");
@@ -97,7 +115,7 @@ window.initAdjustInputSize = function () {
         const span = wrapper.querySelector(".js-init-adjust-input-size-span");
 
         span.textContent = input.value || ' ';
-        input.style.setProperty('width', span.offsetWidth + 'px', 'important');
+        input.style.setProperty('width', (span.offsetWidth + 5) + 'px', 'important');
     })
 
 }
