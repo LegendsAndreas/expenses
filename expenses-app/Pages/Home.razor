@@ -307,7 +307,7 @@
                                     Month:
                                     <span>
                                         <span
-                                            class="home__expenses__expense__total__price">@expense.GetMonthlyPrice().ToString(".00")@expense.GetCurrencySymbol()</span>
+                                            class="home__expenses__expense__total__price">@expense.GetMonthlyPrice().ToString("0.00")@expense.GetCurrencySymbol()</span>
                                         <ExpensesSummaryPopup Month="1" Item="expense"/>
                                     </span>
                                 </div>
@@ -317,7 +317,7 @@
                                     Quarter:
                                     <span>
                                         <span
-                                            class="home__expenses__expense__total__price">@((expense.GetMonthlyPrice() * 3).ToString(".00"))@expense.GetCurrencySymbol()</span>
+                                            class="home__expenses__expense__total__price">@((expense.GetMonthlyPrice() * 3).ToString("0.00"))@expense.GetCurrencySymbol()</span>
                                         <ExpensesSummaryPopup Month="3" Item="expense"/>
                                     </span>
                                 </div>
@@ -327,7 +327,7 @@
                                     Semiannual:
                                     <span>
                                         <span
-                                            class="home__expenses__expense__total__price">@((expense.GetMonthlyPrice() * 6).ToString(".00"))@expense.GetCurrencySymbol()</span>
+                                            class="home__expenses__expense__total__price">@((expense.GetMonthlyPrice() * 6).ToString("0.00"))@expense.GetCurrencySymbol()</span>
                                         <ExpensesSummaryPopup Month="6" Item="expense"/>
                                     </span>
                                 </div>
@@ -337,7 +337,7 @@
                                     Annual:
                                     <span>
                                         <span
-                                            class="home__expenses__expense__total__price">@((expense.GetMonthlyPrice() * 12).ToString(".00"))@expense.GetCurrencySymbol()</span>
+                                            class="home__expenses__expense__total__price">@((expense.GetMonthlyPrice() * 12).ToString("0.00"))@expense.GetCurrencySymbol()</span>
                                         <ExpensesSummaryPopup Month="12" Item="expense"/>
                                     </span>
                                 </div>
