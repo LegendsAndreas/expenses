@@ -90,7 +90,7 @@ public class Expenses
 public class ExpensesItem
 {
     [Required] public string Name { get; set; } = "";
-    [Required] public string Currency { get; set; } = "";
+    [Required] public string Currency { get; set; } = "DKK";
     [Required] 
     [Range(1, 31)]
     public int CountedDaysInAMonth { get; set; } = 1;
