@@ -18,14 +18,20 @@
 
     [Parameter] public required Expenses Item { get; set; }
     [Parameter] public required int Month { get; set; }
+    [Parameter] public required string ListCurrency { get; set; }
 
     private string SetPriceText(ExpensesItem expense)
     {
-        return expense.Name + ": " + $"{expense.CountedDaysInAMonth} * {expense.Price} = {expense.CountedDaysInAMonth * expense.Price} * {Month}" + " = " + $"{expense.GetItemTotalPrice() * Month}";
+        return expense.Name + ": " + $"{expense.CountedDaysInAMonth} * {expense.Price} = {Month} * {expense.CountedDaysInAMonth * expense.Price} * {expense.GetCurrencyMultiplier()} ÷ {GetCurrencyDivider(expense)}" + " = " + $"{(expense.GetItemTotalPriceAndConvertToListCurrency(ListCurrency) * Month):0.00}";
     }
 
     private string SetUpdatedPrice(ExpensesItem expense, ref float total)
     {
-        return $"• {total} + {expense.GetItemTotalPrice() * Month} = {total += expense.GetItemTotalPrice() * Month}{expense.GetCurrencySymbol()}";
+        return $"• {total:0.00} + {(expense.GetItemTotalPriceAndConvertToListCurrency(ListCurrency) * Month):0.00} = {(total += expense.GetItemTotalPriceAndConvertToListCurrency(ListCurrency) * Month):0.00}{Item.GetCurrencySymbol()}";
+    }
+
+    private string GetCurrencyDivider(ExpensesItem expense)
+    {
+        return expense.Currency == ListCurrency ? "1" : expense.GetCurrencyMultiplier(ListCurrency).ToString("0.00");
     }
 }

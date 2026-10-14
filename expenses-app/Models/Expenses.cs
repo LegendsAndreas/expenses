@@ -108,7 +108,7 @@ public class ExpensesItem
         return Price * CountedDaysInAMonth * GetCurrencyMultiplier();
     }
 
-    private float GetCurrencyMultiplier(string currency)
+    public float GetCurrencyMultiplier(string currency)
     {
         return currency switch
         {
@@ -119,7 +119,7 @@ public class ExpensesItem
         };
     }
 
-    private float GetCurrencyMultiplier()
+    public float GetCurrencyMultiplier()
     {
         return Currency switch
         {

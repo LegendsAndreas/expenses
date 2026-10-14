@@ -1,4 +1,6 @@
-﻿window.exportExpenses = () => {
+﻿window.getDailyExpenseName = (dateStr) => `daily-expense-${dateStr}`;
+
+window.exportExpenses = () => {
     const expenses = localStorage.getItem("expenses");
     if (!expenses) {
         alert("No expenses found in local storage");
@@ -17,7 +19,7 @@
 };
 
 window.exportDailyExpenses = (dateStr) => {
-    const expenses = localStorage.getItem("daily-expense-" + dateStr);
+    const expenses = localStorage.getItem(getDailyExpenseName(dateStr));
     if (!expenses) {
         alert("No expenses found in local storage");
         return;
@@ -28,7 +30,7 @@ window.exportDailyExpenses = (dateStr) => {
 
     const a = document.createElement("a");
     a.href = url;
-    a.download = "expenses.json";
+    a.download = `${getDailyExpenseName(dateStr)}.json`;
     a.click();
 
     URL.revokeObjectURL(url);
@@ -54,6 +56,42 @@ window.importExpenses = () => {
     };
 
     fileInput.click();
+};
+
+window.importDailyExpenses = (dateStr) => {
+    return new Promise((resolve, reject) => {
+        console.log("Importing daily expenses...");
+        const fileInput = document.createElement("input");
+        fileInput.type = "file";
+        fileInput.accept = ".json";
+
+        fileInput.onchange = (event) => {
+            const file = event.target.files[0];
+            if (!file) {
+                resolve(false); // nothing chosen
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    localStorage.setItem(getDailyExpenseName(dateStr), e.target.result);
+                    alert("Expenses imported successfully");
+                    resolve(true);
+                } catch (err) {
+                    reject(err);
+                }
+            };
+            reader.onerror = () => reject(reader.error);
+            reader.readAsText(file);
+        };
+
+        // Fires when the dialog is closed without choosing a file
+        // (supported in modern browsers)
+        fileInput.oncancel = () => resolve(false);
+
+        fileInput.click();
+    });
 };
 
 window.shakeElement = function (iconNameId) {

@@ -96,8 +96,8 @@ public class ExpensesService
         await _jsRuntime.InvokeVoidAsync("importExpenses");
     }
     
-    public async Task ImportDailyExpenses()
+    public async Task<bool> ImportDailyExpenses(DateOnly date)
     {
-        await _jsRuntime.InvokeVoidAsync("importDailyExpenses");
+        return await _jsRuntime.InvokeAsync<bool>("importDailyExpenses", date.ToString("dd-MM-yyyy"));
     }
 }
