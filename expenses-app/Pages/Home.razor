@@ -73,23 +73,23 @@
             Guid guid = Guid.NewGuid();
             string containerId = $"expense-container-{guid}";
             <div class="home__expenses__expense home__level-2">
-                <div class="mb-2 d-flex js-init-adjust-input-size">
+                <div class="mb-2 d-flex js-init-adjust-input-size flex-wrap">
                     <InputText disabled="@(_disabledExpensesNames.Contains(expense))"
-                               class="form-control home__expenses__expense__title js-init-adjust-input-size-input"
+                               class="form-control home__expenses__expense__title js-init-adjust-input-size-input mt-1"
                                @oninput="() => AdjustInputSize(expenseIndex)"
                                id="@($"expenses-{expenseIndex}")"
                                @bind-Value="expense.Name"/>
-                    <span class="home__expenses__expense__input-span js-init-adjust-input-size-span"
+                    <span class="home__expenses__expense__input-span js-init-adjust-input-size-span mt-1"
                           id="@($"span-{expenseIndex}")"></span>
                     @{ string expenseId = $"expense-{Guid.NewGuid()}"; }
                     <InputSelect disabled="@(_disabledExpensesNames.Contains(expense))"
-                                 class="form-control home__expenses__expense__title"
+                                 class="form-control home__expenses__expense__title mt-1"
                                  @bind-Value="expense.Currency">
                         <option value="DKK">DKK</option>
                         <option value="USD">USD</option>
                         <option value="EUR">EUR</option>
                     </InputSelect>
-                    <button class="btn btn-secondary home__expenses__expense__disable-btn" type="button"
+                    <button class="btn btn-secondary home__expenses__expense__disable-btn mt-1" type="button"
                             @onclick="() => ToggleExpenseTitle(expense, expenseId)">
                         <img src="images/pencil-square.svg" alt="Pencil square..." id="@expenseId"
                              style="filter: invert(1);"/>
@@ -425,6 +425,7 @@
     private string _totalAnnuallyMoneyStr = "";
     private string _currentCurrency = "DKK";
     private bool _setHeight = false;
+    private bool _adjustSummaryPopups = false;
     private readonly DateOnly _currentDate = DateOnly.FromDateTime(DateTime.Now);
     private List<Expenses>? _currentDailyExpense;
     private DateOnly _dateToGetDailyExpenses = DateOnly.FromDateTime(DateTime.Now);
@@ -468,6 +469,12 @@
         {
             await JsRuntime.InvokeVoidAsync("setHeight");
             _setHeight = false;
+        }
+
+        if (_adjustSummaryPopups)
+        {
+            await JsRuntime.InvokeVoidAsync("window.adjustSummaryPopups");
+            _adjustSummaryPopups = false;
         }
 
         if (firstRender)
@@ -597,6 +604,7 @@
             }
         };
         _setHeight = true;
+        _adjustSummaryPopups = true;
     }
 
     private async Task ExportExpenses() => await ExpenseService.ExportExpenses();
@@ -618,6 +626,7 @@
             Console.WriteLine("Import cancelled");
             return;
         }
+
         var dailyExpenses = await ExpenseService.GetDailyExpenses(_dateToGetDailyExpenses);
         if (dailyExpenses != null)
         {
@@ -633,6 +642,7 @@
         {
             Console.WriteLine("No daily expenses found");
         }
+
         _setHeight = true;
     }
 

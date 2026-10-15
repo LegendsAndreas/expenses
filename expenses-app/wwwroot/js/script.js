@@ -239,14 +239,34 @@ window.initSummaryPopupClamping = () => {
     }
 };
 
-window.adjustOutBoundSummaryPopups = function () {
-    const expensesSummaryPopups = document.querySelectorAll(".expenses-summary-popup");
-    expensesSummaryPopups.forEach(popup => {
-        const popupBounds = popup.getBoundingClientRect();
-        const windowBounds = document.documentElement.getBoundingClientRect();
-        const isPopupOutsideWindow = popupBounds.bottom > windowBounds.bottom;
-        if (isPopupOutsideWindow) {
-            popup.classList.add("expenses-summary-popup__show-popup");
+window.adjustSummaryPopups = function () {
+    const clampPopup = (summary) => {
+        const popup = summary.querySelector('.expenses-summary__popup');
+        if (!popup) return;
+
+        popup.style.transform = '';
+        const rect = popup.getBoundingClientRect();
+        if (rect.width === 0) return; // not visible
+
+        const margin = 20;
+        const vw = document.documentElement.clientWidth; // more reliable than innerWidth on mobile
+        const vh = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+
+        let shiftX = 0;
+        if (rect.right > vw - margin) {
+            shiftX = (vw - margin) - rect.right;
+        } else if (rect.left < margin) {
+            shiftX = margin - rect.left;
         }
-    })
+
+        let shiftY = 0;
+        if (rect.bottom > vh - margin) {
+            shiftY = (vh - margin) - rect.bottom;
+        }
+
+        popup.style.transform = `translate(${shiftX}px, ${shiftY}px)`;
+    };
+    const initial = () => document.querySelectorAll('.expenses-summary').forEach(clampPopup);
+    requestAnimationFrame(initial);
 }
+
